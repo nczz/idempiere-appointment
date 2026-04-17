@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <bundle id="com.mxp.idempiere.appointments" version="12.0.0.qualifier">
+      <category name="mxp.idempiere.appointments"/>
+   </bundle>
+   <category-def name="mxp.idempiere.appointments" label="iDempiere Appointment Management"/>
+</site>

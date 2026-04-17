@@ -1,0 +1,27 @@
+{
+  "name": "idempiere-appointment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nczz/idempiere-appointment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nczz/idempiere-appointment/issues"
+  },
+  "homepage": "https://github.com/nczz/idempiere-appointment#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.4.0"
+    immediate="true"
+    name="com.mxp.appointments.AppointmentActivator">
+  <implementation class="com.mxp.appointments.AppointmentActivator"/>
+  <reference
+      name="mappedFormFactory"
+      interface="org.adempiere.webui.factory.IMappedFormFactory"
+      cardinality="1..1"
+      policy="static"
+      bind="setMappedFormFactory"/>
+</scr:component>
