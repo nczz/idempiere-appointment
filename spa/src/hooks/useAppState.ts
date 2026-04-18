@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import type {
   Resource, ResourceType, Status, Assignment, Appointment,
   AppointmentResource, AssignmentDesc, DialogState,
-  BookRequest, UpdateRequest,
+  BookRequest, UpdateRequest, ServicePreset,
 } from '../types';
 import { TERMINAL_STATUSES, RESOURCE_COLORS } from '../types';
 import * as api from '../api';
@@ -57,6 +57,7 @@ export function useAppState() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
   const [statusList, setStatusList] = useState<Status[]>([]);
+  const [serviceList, setServiceList] = useState<ServicePreset[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedResources, setSelectedResources] = useState<Set<number>>(new Set());
   const [showCancelled, setShowCancelled] = useState(false);
@@ -97,6 +98,7 @@ export function useAppState() {
       setResourceTypes(data.resourceTypes || []);
       setResources(res);
       setStatusList(data.statusList || []);
+      setServiceList(data.serviceList || []);
       // Default: all resources selected
       setSelectedResources(new Set(res.map(r => r.id)));
     } catch (e) {
@@ -206,7 +208,7 @@ export function useAppState() {
 
   return {
     // State
-    resources, resourceTypes, statusList,
+    resources, resourceTypes, statusList, serviceList,
     appointments: visibleAppointments,
     allAppointments: appointments,
     selectedResources, showCancelled,

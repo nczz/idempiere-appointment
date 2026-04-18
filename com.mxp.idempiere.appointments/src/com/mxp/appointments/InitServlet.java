@@ -77,6 +77,21 @@ public class InitServlet extends HttpServlet {
 						+ ",\"Description\":\"" + esc(rs.getString(3)) + "\""
 						+ "}";
 			});
+			json.append("],");
+
+			// 4. Service List (from X_AppointmentService reference)
+			json.append("\"serviceList\":[");
+			sql = "SELECT rl.Value, rl.Name, rl.Description "
+					+ "FROM AD_Ref_List rl "
+					+ "JOIN AD_Reference r ON r.AD_Reference_ID = rl.AD_Reference_ID "
+					+ "WHERE r.Name = 'X_AppointmentService' AND rl.IsActive='Y' "
+					+ "ORDER BY rl.Name";
+			appendRows(json, sql, rs -> {
+				return "{\"Value\":\"" + esc(rs.getString(1)) + "\""
+						+ ",\"Name\":\"" + esc(rs.getString(2)) + "\""
+						+ ",\"minutes\":" + parseInt(rs.getString(3), 30)
+						+ "}";
+			});
 			json.append("]}");
 
 			out.print(json);
@@ -110,5 +125,11 @@ public class InitServlet extends HttpServlet {
 
 	private String nvl(String s) {
 		return s == null ? "" : s;
+	}
+
+	private int parseInt(String s, int defaultVal) {
+		if (s == null) return defaultVal;
+		try { return Integer.parseInt(s.trim()); }
+		catch (Exception e) { return defaultVal; }
 	}
 }

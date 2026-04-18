@@ -119,7 +119,55 @@ SELECT 1000100, 102, 11, 0, 'Y', NOW(), 100, NOW(), 100,
   'Y', 'mxp-appt-formaccess-001'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Form_Access WHERE AD_Form_Access_UU = 'mxp-appt-formaccess-001');
 
--- 10. Translations (required for zh_TW locale to display menu items)
+-- 10. AD_Reference: X_AppointmentService (service presets, manageable from iDempiere UI)
+INSERT INTO AD_Reference (AD_Reference_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  Name, Description, ValidationType, EntityType, AD_Reference_UU)
+SELECT 1000101, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  'X_AppointmentService', 'Appointment service presets (Name=display, Description=minutes)', 'L', 'U',
+  'mxp-appt-ref-service-001'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Reference WHERE AD_Reference_UU = 'mxp-appt-ref-service-001');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000110, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'CONSULT', '諮詢', '15', 'U', 'mxp-appt-svc-consult'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-consult');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000111, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'CLEAN', '洗牙', '30', 'U', 'mxp-appt-svc-clean'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-clean');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000112, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'FILL', '補牙', '30', 'U', 'mxp-appt-svc-fill'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-fill');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000113, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'ROOT', '根管治療', '60', 'U', 'mxp-appt-svc-root'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-root');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000114, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'IMPLANT', '植牙', '90', 'U', 'mxp-appt-svc-implant'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-implant');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000115, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'ORTHO', '矯正回診', '30', 'U', 'mxp-appt-svc-ortho'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-ortho');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000116, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'EXTRACT', '拔牙', '45', 'U', 'mxp-appt-svc-extract'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-extract');
+
+INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
+SELECT 1000117, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'OTHER', '其他', '30', 'U', 'mxp-appt-svc-other'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-other');
+
+-- 11. Translations (required for zh_TW locale to display menu items)
 INSERT INTO AD_Menu_Trl (AD_Menu_ID, AD_Language, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
   Name, Description, IsTranslated, AD_Menu_Trl_UU)
 SELECT 1000100, l.AD_Language, 0, 0, 'Y', NOW(), 100, NOW(), 100,

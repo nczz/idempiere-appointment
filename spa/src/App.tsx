@@ -68,6 +68,7 @@ export default function App() {
           dialog={state.dialog}
           resources={state.resources}
           statusList={state.statusList}
+          serviceList={state.serviceList}
           onClose={() => state.setDialog(null)}
           onBook={state.bookAppointment}
           onUpdate={state.updateAppointment}

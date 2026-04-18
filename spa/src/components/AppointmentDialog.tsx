@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import type { Appointment, Resource, Status, DialogState, BPartnerResult } from '../types';
-import { SERVICE_PRESETS } from '../types';
+import type { Appointment, Resource, Status, DialogState, BPartnerResult, ServicePreset } from '../types';
 import * as api from '../api';
 
 interface Props {
   dialog: DialogState;
   resources: Resource[];
   statusList: Status[];
+  serviceList: ServicePreset[];
   onClose: () => void;
   onBook: (data: { name: string; date: string; startTime: string; endTime: string; service: string; notes: string; resourceIds: number[]; bpartnerId: number }) => Promise<void>;
   onUpdate: (appt: Appointment, data: { name: string; status: string; date: string; startTime: string; endTime: string; notes: string }) => Promise<void>;
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function AppointmentDialog({
-  dialog, resources, statusList, onClose,
+  dialog, resources, statusList, serviceList, onClose,
   onBook, onUpdate, onCancel, onGroupAdd, onGroupRemove, toast,
 }: Props) {
   const isEdit = dialog.mode === 'edit';
@@ -234,7 +234,7 @@ export default function AppointmentDialog({
           <label>服務項目</label>
           <select value={service} onChange={e => handleServiceChange(e.target.value)}>
             <option value="">-- 選擇 --</option>
-            {SERVICE_PRESETS.map(s => <option key={s.name} value={s.name}>{s.name} ({s.minutes}分)</option>)}
+            {serviceList.map(s => <option key={s.Value} value={s.Name}>{s.Name} ({s.minutes}分)</option>)}
           </select>
         </div>
 

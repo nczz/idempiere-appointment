@@ -1,6 +1,6 @@
 import type {
   ResourceType, Resource, Status, Assignment,
-  BookRequest, UpdateRequest, BPartnerResult,
+  BookRequest, UpdateRequest, BPartnerResult, ServicePreset,
 } from './types';
 
 const APPT_BASE = `${window.location.origin}/appointment`;
@@ -72,6 +72,7 @@ interface InitResponse {
   resourceTypes: ResourceType[];
   resources: Resource[];
   statusList: Status[];
+  serviceList: ServicePreset[];
 }
 
 export async function getInit(): Promise<InitResponse> {

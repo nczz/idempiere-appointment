@@ -118,20 +118,15 @@ export interface BPartnerResult {
 
 // ── Constants ─────────────────────────────────────────────────────
 
+export interface ServicePreset {
+  Value: string;
+  Name: string;
+  minutes: number;
+}
+
 export const TERMINAL_STATUSES = ['CXL', 'ABS'];
 
 export const RESOURCE_COLORS = [
   '#4285f4', '#34a853', '#fbbc04', '#ea4335',
   '#8e24aa', '#00acc1', '#ff7043', '#5c6bc0',
-];
-
-export const SERVICE_PRESETS = [
-  { name: '諮詢', minutes: 15 },
-  { name: '洗牙', minutes: 30 },
-  { name: '補牙', minutes: 30 },
-  { name: '根管治療', minutes: 60 },
-  { name: '植牙', minutes: 90 },
-  { name: '矯正回診', minutes: 30 },
-  { name: '拔牙', minutes: 45 },
-  { name: '其他', minutes: 30 },
 ];
