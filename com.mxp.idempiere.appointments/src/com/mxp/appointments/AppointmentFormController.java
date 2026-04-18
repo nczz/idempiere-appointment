@@ -80,6 +80,7 @@ public class AppointmentFormController implements IFormController {
 
 	private void setupTokenRefreshBridge() {
 		String iframeUuid = form.getIframe().getUuid();
+		String zoomUuid = form.getZoomData().getUuid();
 		String script =
 			"(function(){window.addEventListener('message',function(e){" +
 			"if(!e.data||!e.data.type)return;" +
@@ -87,7 +88,9 @@ public class AppointmentFormController implements IFormController {
 			"if(e.data.type==='refresh-token'){" +
 			"zAu.send(new zk.Event(w,'onTokenRefresh',null));" +
 			"}else if(e.data.type==='zoom'){" +
-			"zAu.send(new zk.Event(w,'onAppointmentZoom',JSON.stringify(e.data)));" +
+			"var zd=zk.Widget.$('#" + zoomUuid + "');" +
+			"zd.setValue(e.data.tableName+'|'+e.data.recordId);" +
+			"zd.fireOnChange();" +
 			"}});})();";
 		Clients.evalJavaScript(script);
 
@@ -104,18 +107,18 @@ public class AppointmentFormController implements IFormController {
 			}
 		});
 
-		form.getIframe().addEventListener("onAppointmentZoom", new EventListener<Event>() {
+		form.getZoomData().addEventListener("onChange", new EventListener<Event>() {
 			@Override
 			public void onEvent(Event event) {
 				try {
-					String data = (String) event.getData();
-					String tableName = extractJsonValue(data, "tableName");
-					int recordId = Integer.parseInt(extractJsonValue(data, "recordId"));
-					if (tableName != null && recordId > 0) {
-						int tableId = MTable.getTable_ID(tableName);
-						if (tableId > 0) {
-							AEnv.zoom(tableId, recordId);
-						}
+					String val = form.getZoomData().getValue();
+					if (val == null || !val.contains("|")) return;
+					String[] parts = val.split("\\|", 2);
+					String tableName = parts[0];
+					int recordId = Integer.parseInt(parts[1]);
+					int tableId = MTable.getTable_ID(tableName);
+					if (tableId > 0 && recordId > 0) {
+						AEnv.zoom(tableId, recordId);
 					}
 				} catch (Exception e) {
 					log.log(Level.WARNING, "Zoom failed", e);

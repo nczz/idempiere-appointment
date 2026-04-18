@@ -1,9 +1,8 @@
 package com.mxp.appointments;
 
 import org.adempiere.webui.panel.CustomForm;
-import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Iframe;
+import org.zkoss.zul.Textbox;
 
 /**
  * ZK Form that hosts the appointment SPA via an iframe.
@@ -22,6 +21,7 @@ public class AppointmentForm extends CustomForm {
 	private static final long serialVersionUID = 1L;
 
 	private Iframe iframe;
+	private Textbox zoomData;
 
 	public AppointmentForm() {
 		iframe = new Iframe();
@@ -30,6 +30,11 @@ public class AppointmentForm extends CustomForm {
 		iframe.setHeight("100%");
 		iframe.setStyle("border:none;");
 		appendChild(iframe);
+
+		zoomData = new Textbox();
+		zoomData.setId("zoomData");
+		zoomData.setVisible(false);
+		appendChild(zoomData);
 
 		setWidth("100%");
 		setHeight("100%");
@@ -53,5 +58,9 @@ public class AppointmentForm extends CustomForm {
 
 	public Iframe getIframe() {
 		return iframe;
+	}
+
+	public Textbox getZoomData() {
+		return zoomData;
 	}
 }
