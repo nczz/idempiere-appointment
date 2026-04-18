@@ -108,9 +108,93 @@ SELECT 1000202, 0, 0, 'Y', NOW(), 100, NOW(), 100,
   'U', 'mxp-appt-col-color', 0, 'N', 'N', 'N', 'N', 'N'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-color');
 
+-- 4d. AD_Element for X_AppointmentService
+INSERT INTO AD_Element (AD_Element_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  ColumnName, Name, PrintName, Description, EntityType, AD_Element_UU)
+SELECT 1000102, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  'X_AppointmentService', 'Appointment Service', 'Appointment Service',
+  'Service type code for this appointment', 'U', 'mxp-appt-elem-service'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Element WHERE AD_Element_UU = 'mxp-appt-elem-service');
+
+-- 4e. AD_Column: X_AppointmentService on S_ResourceAssignment (AD_Table_ID=485, String=10)
+INSERT INTO AD_Column (AD_Column_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Table_ID, AD_Element_ID, ColumnName, Name, Description,
+  AD_Reference_ID,
+  FieldLength, IsMandatory, IsUpdateable, IsAlwaysUpdateable,
+  IsToolbarButton, IsAllowLogging, IsAllowCopy, IsSecure, IsHtml, IsAutocomplete, IsPartitionKey,
+  EntityType, AD_Column_UU, Version, IsKey, IsParent, IsTranslated, IsIdentifier, IsSelectionColumn)
+SELECT 1000203, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  485, 1000102, 'X_AppointmentService', 'Appointment Service', 'Service type code',
+  10,
+  40, 'N', 'Y', 'Y',
+  'N', 'Y', 'Y', 'N', 'N', 'N', 'N',
+  'U', 'mxp-appt-col-service', 0, 'N', 'N', 'N', 'N', 'N'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-service');
+
+-- 4f. AD_Element for X_GroupID
+INSERT INTO AD_Element (AD_Element_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  ColumnName, Name, PrintName, Description, EntityType, AD_Element_UU)
+SELECT 1000103, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  'X_GroupID', 'Group ID', 'Group ID',
+  'UUID linking grouped resource assignments', 'U', 'mxp-appt-elem-groupid'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Element WHERE AD_Element_UU = 'mxp-appt-elem-groupid');
+
+-- 4g. AD_Column: X_GroupID on S_ResourceAssignment (AD_Table_ID=485, String=10)
+INSERT INTO AD_Column (AD_Column_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Table_ID, AD_Element_ID, ColumnName, Name, Description,
+  AD_Reference_ID,
+  FieldLength, IsMandatory, IsUpdateable, IsAlwaysUpdateable,
+  IsToolbarButton, IsAllowLogging, IsAllowCopy, IsSecure, IsHtml, IsAutocomplete, IsPartitionKey,
+  EntityType, AD_Column_UU, Version, IsKey, IsParent, IsTranslated, IsIdentifier, IsSelectionColumn)
+SELECT 1000204, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  485, 1000103, 'X_GroupID', 'Group ID', 'UUID linking grouped resource assignments',
+  10,
+  36, 'N', 'Y', 'Y',
+  'N', 'Y', 'Y', 'N', 'N', 'N', 'N',
+  'U', 'mxp-appt-col-groupid', 0, 'N', 'N', 'N', 'N', 'N'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-groupid');
+
+-- 4h. AD_Element for X_Notes
+INSERT INTO AD_Element (AD_Element_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  ColumnName, Name, PrintName, Description, EntityType, AD_Element_UU)
+SELECT 1000104, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  'X_Notes', 'Notes', 'Notes',
+  'Appointment notes', 'U', 'mxp-appt-elem-notes'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Element WHERE AD_Element_UU = 'mxp-appt-elem-notes');
+
+-- 4i. AD_Column: X_Notes on S_ResourceAssignment (AD_Table_ID=485, Text=14)
+INSERT INTO AD_Column (AD_Column_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Table_ID, AD_Element_ID, ColumnName, Name, Description,
+  AD_Reference_ID,
+  FieldLength, IsMandatory, IsUpdateable, IsAlwaysUpdateable,
+  IsToolbarButton, IsAllowLogging, IsAllowCopy, IsSecure, IsHtml, IsAutocomplete, IsPartitionKey,
+  EntityType, AD_Column_UU, Version, IsKey, IsParent, IsTranslated, IsIdentifier, IsSelectionColumn)
+SELECT 1000205, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  485, 1000104, 'X_Notes', 'Notes', 'Appointment notes',
+  14,
+  2000, 'N', 'Y', 'Y',
+  'N', 'Y', 'Y', 'N', 'N', 'N', 'N',
+  'U', 'mxp-appt-col-notes', 0, 'N', 'N', 'N', 'N', 'N'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-notes');
+
 -- 5. DB columns — created by Java syncColumns() after AD_Column INSERT
 -- (Do NOT use ALTER TABLE here — iDempiere's DB.executeUpdateEx doesn't handle DDL properly.
 --  The Activator's afterPackIn() calls syncColumns() to create actual DB columns.)
+
+-- 5b. X_AppointmentStatusLog — status transition history (direct DDL, not an AD table)
+CREATE TABLE IF NOT EXISTS X_AppointmentStatusLog (
+  X_AppointmentStatusLog_ID serial PRIMARY KEY,
+  S_ResourceAssignment_ID int NOT NULL REFERENCES S_ResourceAssignment(S_ResourceAssignment_ID),
+  OldStatus varchar(3),
+  NewStatus varchar(3) NOT NULL,
+  AD_Client_ID int NOT NULL DEFAULT 0,
+  AD_Org_ID int NOT NULL DEFAULT 0,
+  Created timestamp NOT NULL DEFAULT NOW(),
+  CreatedBy int NOT NULL DEFAULT 100,
+  IsActive char(1) NOT NULL DEFAULT 'Y'
+);
+CREATE INDEX IF NOT EXISTS idx_statuslog_assignment ON X_AppointmentStatusLog(S_ResourceAssignment_ID);
+CREATE INDEX IF NOT EXISTS idx_statuslog_created ON X_AppointmentStatusLog(Created);
 
 -- 6. AD_Form: 預約管理
 INSERT INTO AD_Form (AD_Form_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,

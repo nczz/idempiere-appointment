@@ -22,7 +22,7 @@ import org.osgi.framework.ServiceReference;
 public class AppointmentActivator extends Incremental2PackActivator {
 
 	private static final CLogger log = CLogger.getCLogger(AppointmentActivator.class);
-	private static final String MIGRATION_VERSION = "12.0.3";
+	private static final String MIGRATION_VERSION = "12.0.4";
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -49,8 +49,8 @@ public class AppointmentActivator extends Incremental2PackActivator {
 
 	/** Create actual DB columns for any AD_Column that doesn't have a corresponding table column */
 	private void syncColumns() {
-		String[] columns = {"X_AppointmentStatus", "C_BPartner_ID", "X_Color"};
-		String[] tables = {"S_ResourceAssignment", "S_ResourceAssignment", "S_Resource"};
+		String[] columns = {"X_AppointmentStatus", "C_BPartner_ID", "X_Color", "X_AppointmentService", "X_GroupID", "X_Notes"};
+		String[] tables = {"S_ResourceAssignment", "S_ResourceAssignment", "S_Resource", "S_ResourceAssignment", "S_ResourceAssignment", "S_ResourceAssignment"};
 		for (int i = 0; i < columns.length; i++) {
 			try {
 				MTable table = MTable.get(Env.getCtx(), tables[i]);
