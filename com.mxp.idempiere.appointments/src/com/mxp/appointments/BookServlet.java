@@ -80,8 +80,11 @@ public class BookServlet extends HttpServlet {
 		Timestamp tsStart = Timestamp.valueOf(startISO);
 		Timestamp tsEnd = Timestamp.valueOf(endISO);
 
-		// Conflict check
+		// Resource type schedule validation + conflict check
 		for (int rid : resourceIds) {
+			String schedErr = ResourceScheduleCheck.check(rid, tsStart, startTime, endTime);
+			if (schedErr != null) { error(resp, out, 400, schedErr); return; }
+
 			String conflict = ConflictCheck.check(rid, startISO, endISO, 0);
 			if (conflict != null) {
 				String resName = DB.getSQLValueString(null, "SELECT Name FROM S_Resource WHERE S_Resource_ID=?", rid);
