@@ -93,7 +93,7 @@ export function useAppState() {
       const data = await api.getInit();
       const res = (data.resources || []).map((r, i) => ({
         ...r,
-        _color: RESOURCE_COLORS[i % RESOURCE_COLORS.length],
+        _color: r._color || RESOURCE_COLORS[i % RESOURCE_COLORS.length],
       }));
       setResourceTypes(data.resourceTypes || []);
       setResources(res);

@@ -73,8 +73,14 @@ public class ResourceManagementServlet extends HttpServlet {
 
 		String table = req.getServletPath().contains("resource-types") ? "S_ResourceType" : "S_Resource";
 		try {
-			DB.executeUpdateEx("UPDATE " + table + " SET Name=?, Updated=NOW() WHERE " + table + "_ID=?",
-				new Object[]{name, id}, null);
+			if (table.equals("S_Resource")) {
+				String color = parseStr(json, "color");
+				DB.executeUpdateEx("UPDATE S_Resource SET Name=?, Description=?, Updated=NOW() WHERE S_Resource_ID=?",
+					new Object[]{name, color, id}, null);
+			} else {
+				DB.executeUpdateEx("UPDATE S_ResourceType SET Name=?, Updated=NOW() WHERE S_ResourceType_ID=?",
+					new Object[]{name, id}, null);
+			}
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
 			error(resp, out, 500, e.getMessage());
@@ -120,7 +126,7 @@ public class ResourceManagementServlet extends HttpServlet {
 
 	private void listResources(PrintWriter out) throws Exception {
 		StringBuilder json = new StringBuilder("{\"resources\":[");
-		String sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsActive FROM S_Resource ORDER BY Name";
+		String sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsActive, Description FROM S_Resource ORDER BY Name";
 		boolean first = true;
 		try (PreparedStatement ps = DB.prepareStatement(sql, null); ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
@@ -129,6 +135,9 @@ public class ResourceManagementServlet extends HttpServlet {
 				json.append(",\"Name\":\"").append(esc(rs.getString(2))).append("\"");
 				json.append(",\"S_ResourceType_ID\":").append(rs.getInt(3));
 				json.append(",\"IsActive\":").append("Y".equals(rs.getString(4)));
+				String color = rs.getString(5);
+				if (color != null && color.startsWith("#"))
+					json.append(",\"_color\":\"").append(esc(color)).append("\"");
 				json.append("}");
 				first = false;
 			}

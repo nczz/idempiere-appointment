@@ -51,15 +51,17 @@ public class InitServlet extends HttpServlet {
 			});
 			json.append("],");
 
-			// 2. Resources
+			// 2. Resources (include color from Description)
 			json.append("\"resources\":[");
-			sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsAvailable "
+			sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsAvailable, Description "
 					+ "FROM S_Resource WHERE IsActive='Y' ORDER BY Name";
 			appendRows(json, sql, rs -> {
+				String color = rs.getString(5);
 				return "{\"id\":" + rs.getInt(1)
 						+ ",\"Name\":\"" + esc(rs.getString(2)) + "\""
 						+ ",\"S_ResourceType_ID\":" + rs.getInt(3)
 						+ ",\"IsAvailable\":" + "Y".equals(rs.getString(4))
+						+ (color != null && color.startsWith("#") ? ",\"_color\":\"" + esc(color) + "\"" : "")
 						+ "}";
 			});
 			json.append("],");

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import * as api from '../api';
 
 interface ResType { id: number; Name: string; IsActive: boolean; }
-interface Res { id: number; Name: string; S_ResourceType_ID: number; IsActive: boolean; }
+interface Res { id: number; Name: string; S_ResourceType_ID: number; IsActive: boolean; _color?: string; }
 
 interface Props {
   onClose: () => void;
@@ -16,6 +16,7 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
   const [newResName, setNewResName] = useState<Record<number, string>>({});
   const [editId, setEditId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
+  const [editColor, setEditColor] = useState('#4285f4');
   const [editTarget, setEditTarget] = useState<'type' | 'res'>('res');
   const [loading, setLoading] = useState(false);
 
@@ -67,7 +68,9 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
     setLoading(true);
     try {
       const path = editTarget === 'type' ? 'resource-types' : 'resources';
-      await apiCall(path, { method: 'PUT', body: JSON.stringify({ id: String(editId), name: editName.trim() }) });
+      const body: Record<string, string> = { id: String(editId), name: editName.trim() };
+      if (editTarget === 'res') body.color = editColor;
+      await apiCall(path, { method: 'PUT', body: JSON.stringify(body) });
       setEditId(null);
       await load(); onUpdated();
     } catch (e) { alert(e instanceof Error ? e.message : 'Failed'); }
@@ -85,8 +88,9 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
     setLoading(false);
   }
 
-  function startEdit(id: number, name: string, target: 'type' | 'res') {
+  function startEdit(id: number, name: string, target: 'type' | 'res', color?: string) {
     setEditId(id); setEditName(name); setEditTarget(target);
+    setEditColor(color || '#4285f4');
   }
 
   const activeTypes = types.filter(t => t.IsActive);
@@ -123,6 +127,8 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
                 <div key={res.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0 3px 16px' }}>
                   {editId === res.id && editTarget === 'res' ? (
                     <>
+                      <input type="color" value={editColor} onChange={e => setEditColor(e.target.value)}
+                        style={{ width: 28, height: 24, border: 'none', padding: 0, cursor: 'pointer' }} />
                       <input value={editName} onChange={e => setEditName(e.target.value)}
                         style={{ flex: 1, fontSize: 13, padding: '2px 4px' }} />
                       <button onClick={handleUpdate} disabled={loading} style={{ fontSize: 11 }}>✓</button>
@@ -130,8 +136,9 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
                     </>
                   ) : (
                     <>
+                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: res._color || '#999', flexShrink: 0 }} />
                       <span style={{ flex: 1, fontSize: 13 }}>{res.Name}</span>
-                      <button onClick={() => startEdit(res.id, res.Name, 'res')}
+                      <button onClick={() => startEdit(res.id, res.Name, 'res', res._color)}
                         style={{ fontSize: 11, padding: '1px 6px' }}>編輯</button>
                       <button onClick={() => handleDeactivate(res.id, res.Name, 'res')}
                         style={{ fontSize: 11, padding: '1px 6px', color: '#d32f2f' }}>停用</button>
