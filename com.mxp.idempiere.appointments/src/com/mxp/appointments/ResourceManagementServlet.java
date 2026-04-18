@@ -171,6 +171,7 @@ public class ResourceManagementServlet extends HttpServlet {
 
 		int clientId = DB.getSQLValue(null, "SELECT AD_Client_ID FROM S_ResourceType WHERE S_ResourceType_ID=?", typeId);
 		int orgId = DB.getSQLValue(null, "SELECT MIN(AD_Org_ID) FROM AD_Org WHERE AD_Client_ID=? AND AD_Org_ID > 0", clientId);
+		int warehouseId = DB.getSQLValue(null, "SELECT MIN(M_Warehouse_ID) FROM M_Warehouse WHERE AD_Client_ID=? AND IsActive='Y'", clientId);
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, orgId > 0 ? orgId : 0);
 
@@ -179,7 +180,7 @@ public class ResourceManagementServlet extends HttpServlet {
 		res.setValue(name);
 		res.setS_ResourceType_ID(typeId);
 		res.setIsAvailable(true);
-		// MResource.saveEx() auto-creates M_Product
+		if (warehouseId > 0) res.setM_Warehouse_ID(warehouseId);
 		res.saveEx();
 
 		resp.setStatus(201);
@@ -222,7 +223,7 @@ public class ResourceManagementServlet extends HttpServlet {
 
 	private String esc(String s) {
 		if (s == null) return "";
-		return s.replace("\\", "\\\\").replace("\"", "\\\"");
+		return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ").replace("\r", "");
 	}
 
 	private int parseInt(String s, int def) {
