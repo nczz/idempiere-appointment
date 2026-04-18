@@ -177,7 +177,10 @@ export default function AppointmentDialog({
           {bpInfo && (
             <div style={{ fontSize: '0.85em', marginTop: 4, padding: '6px 8px', background: '#EFF6FF', borderRadius: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #BFDBFE' }}>
               <span>✅ {bpInfo}</span>
-              <button type="button" onClick={() => { setBpId(0); setBpInfo(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1em', color: '#999' }}>✕</button>
+              <span>
+                {bpId > 0 && <a href="#" onClick={(e) => { e.preventDefault(); window.open(`${window.location.origin}/webui/?Action=Zoom&TableName=C_BPartner&Record_ID=${bpId}`); }} style={{ marginRight: 8, textDecoration: 'none' }} title="開啟業務夥伴">🔗</a>}
+                <button type="button" onClick={() => { setBpId(0); setBpInfo(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1em', color: '#999' }}>✕</button>
+              </span>
             </div>
           )}
         </div>
