@@ -51,12 +51,14 @@ public class BookServlet extends HttpServlet {
 		if (resourceIds.length == 0) { error(resp, out, 400, "Missing resourceIds"); return; }
 		if (date == null || startTime == null || endTime == null) { error(resp, out, 400, "Missing date/time"); return; }
 
-		// Org from session context — servlet runs inside iDempiere, Env has the login context
-		int orgId = Env.getAD_Org_ID(Env.getCtx());
-		if (orgId <= 0) {
-			// Fallback: use the resource's org
-			orgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
-		}
+		// Get org and client from the resource (WAB servlet has no ZK session context)
+		int orgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
+		int clientId = DB.getSQLValue(null, "SELECT AD_Client_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
+		if (orgId <= 0 || clientId <= 0) { error(resp, out, 400, "Invalid resource"); return; }
+
+		// Set up minimal Env context for MResourceAssignment
+		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
+		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, orgId);
 
 		String startISO = date + "T" + startTime + ":00Z";
 		String endISO = date + "T" + endTime + ":00Z";
