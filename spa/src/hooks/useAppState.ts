@@ -165,9 +165,15 @@ export function useAppState() {
     });
     const { start, end } = dateRangeRef.current;
     if (start && end) {
-      const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
-      console.log('[book] reloaded events:', events.length, 'dateRange:', dateRangeRef.current);
-      setAssignments(events);
+      try {
+        const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
+        console.log('[book] reloaded events:', events.length, 'start:', start.slice(0,10), 'end:', end.slice(0,10), 'org:', api.getOrgId());
+        setAssignments(events);
+      } catch (e) {
+        console.error('[book] reload failed:', e);
+      }
+    } else {
+      console.warn('[book] no dateRange stored');
     }
   }, []);
 
