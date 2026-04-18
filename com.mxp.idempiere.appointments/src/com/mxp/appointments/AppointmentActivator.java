@@ -9,6 +9,8 @@ import java.util.logging.Level;
 
 import org.adempiere.plugin.utils.Incremental2PackActivator;
 import org.adempiere.webui.factory.IMappedFormFactory;
+import org.compiere.model.MColumn;
+import org.compiere.model.MTable;
 import org.compiere.model.Query;
 import org.compiere.model.X_AD_Package_Imp;
 import org.compiere.util.CLogger;
@@ -39,6 +41,34 @@ public class AppointmentActivator extends Incremental2PackActivator {
 		// Run SQL migration if not yet applied
 		if (!isMigrationApplied(MIGRATION_VERSION)) {
 			runMigration(MIGRATION_VERSION);
+		}
+
+		// Sync AD_Column → actual DB columns (iDempiere way to handle DDL)
+		syncColumns();
+	}
+
+	/** Create actual DB columns for any AD_Column that doesn't have a corresponding table column */
+	private void syncColumns() {
+		String[] columns = {"X_AppointmentStatus", "C_BPartner_ID", "X_Color"};
+		String[] tables = {"S_ResourceAssignment", "S_ResourceAssignment", "S_Resource"};
+		for (int i = 0; i < columns.length; i++) {
+			try {
+				MTable table = MTable.get(Env.getCtx(), tables[i]);
+				MColumn col = MColumn.get(Env.getCtx(), tables[i], columns[i]);
+				if (col == null || table == null) continue;
+				// Check if DB column exists
+				if (DB.getSQLValue(null,
+						"SELECT COUNT(*) FROM information_schema.columns WHERE table_name=? AND column_name=?",
+						tables[i].toLowerCase(), columns[i].toLowerCase()) > 0) continue;
+				// Create DB column using iDempiere's method
+				String sql = col.getSQLAdd(table);
+				if (sql != null && !sql.isEmpty()) {
+					log.log(Level.WARNING, "Syncing column: " + tables[i] + "." + columns[i]);
+					DB.executeUpdate(sql, false, null);
+				}
+			} catch (Exception e) {
+				log.log(Level.WARNING, "Column sync failed: " + tables[i] + "." + columns[i], e);
+			}
 		}
 	}
 

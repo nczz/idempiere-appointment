@@ -86,16 +86,31 @@ SELECT 1000201, 0, 0, 'Y', NOW(), 100, NOW(), 100,
   'U', 'mxp-appt-col-bpartner', 0, 'N', 'N', 'N', 'N', 'N'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-bpartner');
 
--- 5. DB columns (idempotent)
-ALTER TABLE S_ResourceAssignment ADD COLUMN IF NOT EXISTS X_AppointmentStatus VARCHAR(3) DEFAULT 'SCH';
-ALTER TABLE S_ResourceAssignment ADD COLUMN IF NOT EXISTS C_BPartner_ID NUMERIC(10);
+-- 4b. AD_Element for X_Color
+INSERT INTO AD_Element (AD_Element_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  ColumnName, Name, PrintName, Description, EntityType, AD_Element_UU)
+SELECT 1000101, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  'X_Color', 'Color', 'Color', 'Hex color code', 'U', 'mxp-appt-elem-color'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Element WHERE AD_Element_UU = 'mxp-appt-elem-color');
 
--- 5b. X_Color on S_Resource (hex color, e.g. #4285f4)
-ALTER TABLE S_Resource ADD COLUMN IF NOT EXISTS X_Color VARCHAR(7);
+-- 4c. AD_Column: X_Color on S_Resource (AD_Table_ID=487, String type=10)
+INSERT INTO AD_Column (AD_Column_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
+  AD_Table_ID, AD_Element_ID, ColumnName, Name, Description,
+  AD_Reference_ID,
+  FieldLength, IsMandatory, IsUpdateable, IsAlwaysUpdateable,
+  IsToolbarButton, IsAllowLogging, IsAllowCopy, IsSecure, IsHtml, IsAutocomplete, IsPartitionKey,
+  EntityType, AD_Column_UU, Version, IsKey, IsParent, IsTranslated, IsIdentifier, IsSelectionColumn)
+SELECT 1000202, 0, 0, 'Y', NOW(), 100, NOW(), 100,
+  487, 1000101, 'X_Color', 'Color', 'Hex color code for calendar display',
+  10,
+  7, 'N', 'Y', 'Y',
+  'N', 'Y', 'Y', 'N', 'N', 'N', 'N',
+  'U', 'mxp-appt-col-color', 0, 'N', 'N', 'N', 'N', 'N'
+WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-color');
 
--- 5c. Migrate existing colors from Description to X_Color
-UPDATE S_Resource SET X_Color = Description, Description = NULL
-WHERE Description IS NOT NULL AND Description LIKE '#%' AND LENGTH(Description) <= 7 AND X_Color IS NULL;
+-- 5. DB columns — created by Java syncColumns() after AD_Column INSERT
+-- (Do NOT use ALTER TABLE here — iDempiere's DB.executeUpdateEx doesn't handle DDL properly.
+--  The Activator's afterPackIn() calls syncColumns() to create actual DB columns.)
 
 -- 6. AD_Form: 預約管理
 INSERT INTO AD_Form (AD_Form_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
