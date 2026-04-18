@@ -14,7 +14,7 @@ import org.compiere.util.DB;
 public class ResourceScheduleCheck {
 
 	private static final String[] DAY_COLS = {
-		null, "OnSunday", "OnMonday", "OnTuesday", "OnWednesday", "OnThursday", "OnFriday", "OnSaturday"
+		null, "週日", "週一", "週二", "週三", "週四", "週五", "週六"
 	};
 
 	/**
