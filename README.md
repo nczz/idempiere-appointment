@@ -54,8 +54,8 @@ com.mxp.idempiere.appointments.p2/target/repository/
 ```bash
 cd /path/to/idempiere-server
 
-# 使用 iDempiere 標準部署工具
-./update-rest-extensions.sh /path/to/idempiere-appointment/com.mxp.idempiere.appointments.p2/target/repository/
+# 使用 iDempiere 標準部署工具（注意：用 update-prd.sh，不是 update-rest-extensions.sh）
+./update-prd.sh file:///path/to/idempiere-appointment/com.mxp.idempiere.appointments.p2/target/repository/ com.mxp.idempiere.appointments
 ```
 
 ### 4. 重啟 iDempiere
