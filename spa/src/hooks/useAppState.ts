@@ -101,6 +101,12 @@ export function useAppState() {
       setServiceList(data.serviceList || []);
       // Default: all resources selected
       setSelectedResources(new Set(res.map(r => r.id)));
+      // Load events for current date range (token is now ready)
+      const { start, end } = dateRangeRef.current;
+      if (start && end) {
+        const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
+        setAssignments(events);
+      }
     } catch (e) {
       setError('載入失敗：' + (e instanceof Error ? e.message : String(e)));
     } finally {
@@ -112,6 +118,7 @@ export function useAppState() {
 
   const loadEvents = useCallback(async (start: string, end: string) => {
     dateRangeRef.current = { start, end };
+    if (!api.hasToken()) return; // Skip if token not yet initialized
     try {
       const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
       setAssignments(events);

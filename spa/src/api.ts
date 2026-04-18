@@ -36,6 +36,10 @@ export function getOrgId(): number {
   return (getTokenPayload().AD_Org_ID as number) ?? 0;
 }
 
+export function hasToken(): boolean {
+  return token !== null;
+}
+
 // ── Custom API (no auth, same origin) ─────────────────────────────
 
 async function apptFetch<T>(path: string, opts?: RequestInit): Promise<T> {
