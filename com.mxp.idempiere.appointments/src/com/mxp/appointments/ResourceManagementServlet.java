@@ -53,9 +53,9 @@ public class ResourceManagementServlet extends HttpServlet {
 
 		try {
 			if (path.contains("resource-types")) {
-				createResourceType(json, resp, out);
+				createResourceType(req, json, resp, out);
 			} else {
-				createResource(json, resp, out);
+				createResource(req, json, resp, out);
 			}
 		} catch (Exception e) {
 			resp.setStatus(500);
@@ -153,11 +153,11 @@ public class ResourceManagementServlet extends HttpServlet {
 
 	// ── Create ──
 
-	private void createResourceType(String json, HttpServletResponse resp, PrintWriter out) throws Exception {
+	private void createResourceType(HttpServletRequest req, String json, HttpServletResponse resp, PrintWriter out) throws Exception {
 		String name = parseStr(json, "name");
 		if (name == null || name.isEmpty()) { error(resp, out, 400, "Missing name"); return; }
 
-		int clientId = DB.getSQLValue(null, "SELECT MIN(AD_Client_ID) FROM AD_Client WHERE AD_Client_ID > 0");
+		int clientId = AuthContext.getClientId(req);
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, 0);
 
@@ -184,7 +184,7 @@ public class ResourceManagementServlet extends HttpServlet {
 		out.print("{\"id\":" + rt.getS_ResourceType_ID() + "}");
 	}
 
-	private void createResource(String json, HttpServletResponse resp, PrintWriter out) throws Exception {
+	private void createResource(HttpServletRequest req, String json, HttpServletResponse resp, PrintWriter out) throws Exception {
 		String name = parseStr(json, "name");
 		int typeId = parseInt(parseStr(json, "resourceTypeId"), -1);
 		if (name == null || name.isEmpty() || typeId <= 0) {
