@@ -285,8 +285,18 @@ function renderDlgResources(assignment) {
           await api.groupRemoveResource(raId);
           toast('資源已移除');
           await reloadCurrentView();
-          // Find remaining assignment in same group (the removed one is gone)
+          // Ensure all remaining group resources are selected
           const gid = desc.group_id;
+          if (gid) {
+            assignments.filter(a => { const d = parseDesc(a); return d.group_id === gid; })
+              .forEach(a => {
+                const rid = getResourceId(a);
+                selectedResources.add(rid);
+                const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
+                if (cb) cb.checked = true;
+              });
+            renderEvents();
+          }
           const remaining = gid
             ? assignments.find(a => { const d = parseDesc(a); return d.group_id === gid; })
             : assignments.find(a => a.id === assignment.id);
