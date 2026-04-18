@@ -402,11 +402,11 @@ async function saveDialog() {
       return;
     }
   }
-  closeDialog();
-  // Collect all involved resource IDs
+  // Collect involved resource IDs BEFORE closing dialog
   const involvedRids = editingAssignment
     ? [getResourceId(editingAssignment)]
     : [...document.querySelectorAll('.dlg-resource-cb:checked')].map(cb => parseInt(cb.value));
+  closeDialog();
   await refreshAfterAction(involvedRids);
 }
 
