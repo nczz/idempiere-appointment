@@ -33,8 +33,7 @@ public class BPartnerSearchServlet extends HttpServlet {
 		try {
 			StringBuilder json = new StringBuilder("{\"results\":[");
 			String sql = "SELECT bp.C_BPartner_ID, bp.Name, "
-					+ "COALESCE(u.Phone, bp.Phone) AS Phone, "
-					+ "COALESCE(u.EMail, bp.EMail) AS EMail "
+					+ "u.Phone, u.EMail "
 					+ "FROM C_BPartner bp "
 					+ "LEFT JOIN AD_User u ON u.C_BPartner_ID = bp.C_BPartner_ID AND u.IsActive='Y' "
 					+ "WHERE bp.IsActive='Y' AND bp.IsCustomer='Y' "
