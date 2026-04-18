@@ -48,7 +48,7 @@ export default function AppointmentDialog({
       setService(appt.service);
       setNotes(appt.notes);
       setBpId(appt.bpartnerId || 0);
-      if (appt.bpartnerId) setBpInfo(appt.name.split(' - ')[0]);
+      setBpInfo(appt.bpartnerId ? appt.name.split(' - ')[0] : '');
     } else {
       setName('');
       setDate(dialog.defaultDate || new Date().toISOString().slice(0, 10));
@@ -58,11 +58,11 @@ export default function AppointmentDialog({
       setService('');
       setNotes('');
       setBpId(0);
+      setBpInfo('');
       setSelectedRids([]);
     }
     setBpSearch('');
     setBpResults([]);
-    setBpInfo('');
   }, [dialog, isEdit, appt]);
 
   // Service preset — display only, no time auto-calculation
