@@ -20,7 +20,7 @@ import org.osgi.framework.ServiceReference;
 public class AppointmentActivator extends Incremental2PackActivator {
 
 	private static final CLogger log = CLogger.getCLogger(AppointmentActivator.class);
-	private static final String MIGRATION_VERSION = "12.0.1";
+	private static final String MIGRATION_VERSION = "12.0.2";
 
 	@Override
 	public void start(BundleContext context) throws Exception {

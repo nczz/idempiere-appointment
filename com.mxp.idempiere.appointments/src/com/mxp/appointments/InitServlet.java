@@ -53,7 +53,7 @@ public class InitServlet extends HttpServlet {
 
 			// 2. Resources (include color from Description)
 			json.append("\"resources\":[");
-			sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsAvailable, Description "
+			sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsAvailable, X_Color "
 					+ "FROM S_Resource WHERE IsActive='Y' ORDER BY Name";
 			appendRows(json, sql, rs -> {
 				String color = rs.getString(5);

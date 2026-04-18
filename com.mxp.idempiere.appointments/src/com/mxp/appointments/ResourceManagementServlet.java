@@ -75,7 +75,7 @@ public class ResourceManagementServlet extends HttpServlet {
 		try {
 			if (table.equals("S_Resource")) {
 				String color = parseStr(json, "color");
-				DB.executeUpdateEx("UPDATE S_Resource SET Name=?, Description=?, Updated=NOW() WHERE S_Resource_ID=?",
+				DB.executeUpdateEx("UPDATE S_Resource SET Name=?, X_Color=?, Updated=NOW() WHERE S_Resource_ID=?",
 					new Object[]{name, color, id}, null);
 			} else {
 				DB.executeUpdateEx("UPDATE S_ResourceType SET Name=?, Updated=NOW() WHERE S_ResourceType_ID=?",
@@ -126,7 +126,7 @@ public class ResourceManagementServlet extends HttpServlet {
 
 	private void listResources(PrintWriter out) throws Exception {
 		StringBuilder json = new StringBuilder("{\"resources\":[");
-		String sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsActive, Description FROM S_Resource ORDER BY Name";
+		String sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsActive, X_Color FROM S_Resource ORDER BY Name";
 		boolean first = true;
 		try (PreparedStatement ps = DB.prepareStatement(sql, null); ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {

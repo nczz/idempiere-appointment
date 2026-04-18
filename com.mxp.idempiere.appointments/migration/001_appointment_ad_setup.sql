@@ -90,6 +90,13 @@ WHERE NOT EXISTS (SELECT 1 FROM AD_Column WHERE AD_Column_UU = 'mxp-appt-col-bpa
 ALTER TABLE S_ResourceAssignment ADD COLUMN IF NOT EXISTS X_AppointmentStatus VARCHAR(3) DEFAULT 'SCH';
 ALTER TABLE S_ResourceAssignment ADD COLUMN IF NOT EXISTS C_BPartner_ID NUMERIC(10);
 
+-- 5b. X_Color on S_Resource (hex color, e.g. #4285f4)
+ALTER TABLE S_Resource ADD COLUMN IF NOT EXISTS X_Color VARCHAR(7);
+
+-- 5c. Migrate existing colors from Description to X_Color
+UPDATE S_Resource SET X_Color = Description, Description = NULL
+WHERE Description IS NOT NULL AND Description LIKE '#%' AND LENGTH(Description) <= 7 AND X_Color IS NULL;
+
 -- 6. AD_Form: 預約管理
 INSERT INTO AD_Form (AD_Form_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
   Name, Description, Classname, IsBetaFunctionality, AccessLevel, EntityType, AD_Form_UU)
