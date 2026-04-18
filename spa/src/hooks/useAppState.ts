@@ -144,7 +144,8 @@ export function useAppState() {
       // If dialog is open, update its appointment reference with fresh data
       if (updateDialogKey) {
         const freshAppts = groupAssignments(events);
-        const fresh = freshAppts.find(a => a.key === updateDialogKey);
+        const fresh = freshAppts.find(a => a.key === updateDialogKey)
+          || freshAppts.find(a => a.resources.some(r => r.assignmentId === dialog?.appointment?.primaryId));
         if (fresh) {
           setDialog(prev => prev ? { ...prev, appointment: fresh } : null);
         }
