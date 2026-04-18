@@ -34,7 +34,9 @@ public class TokenServlet extends HttpServlet {
 		// Parse sessionId from JSON body
 		StringBuilder body = new StringBuilder();
 		req.getReader().lines().forEach(body::append);
-		int sessionId = parseSessionId(body.toString());
+		String jsonBody = body.toString();
+		int sessionId = parseIntField(jsonBody, "sessionId");
+		int requestedOrgId = parseIntField(jsonBody, "orgId");
 		if (sessionId <= 0) {
 			resp.setStatus(400);
 			out.print("{\"error\":\"Missing sessionId\"}");
@@ -62,7 +64,7 @@ public class TokenServlet extends HttpServlet {
 				int clientId = rs.getInt("AD_Client_ID");
 				int userId = rs.getInt("CreatedBy");
 				int roleId = rs.getInt("AD_Role_ID");
-				int orgId = rs.getInt("AD_Org_ID");
+				int orgId = requestedOrgId > 0 ? requestedOrgId : rs.getInt("AD_Org_ID");
 				int warehouseId = rs.getInt("M_Warehouse_ID");
 
 				String token = createJwt(userName, clientId, userId, roleId, orgId, warehouseId, sessionId);
@@ -108,9 +110,9 @@ public class TokenServlet extends HttpServlet {
 		return data + "." + sig;
 	}
 
-	private int parseSessionId(String json) {
+	private int parseIntField(String json, String field) {
 		if (json == null) return -1;
-		int idx = json.indexOf("\"sessionId\"");
+		int idx = json.indexOf("\"" + field + "\"");
 		if (idx < 0) return -1;
 		idx = json.indexOf(":", idx) + 1;
 		StringBuilder sb = new StringBuilder();

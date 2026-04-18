@@ -51,11 +51,12 @@ public class AppointmentFormController implements IFormController {
 	private String requestToken() {
 		try {
 			int sessionId = Env.getContextAsInt(Env.getCtx(), "#AD_Session_ID");
+			int orgId = Env.getAD_Org_ID(Env.getCtx());
 			if (sessionId <= 0) {
 				log.warning("No AD_Session_ID in context");
 				return null;
 			}
-			String json = "{\"sessionId\":" + sessionId + "}";
+			String json = "{\"sessionId\":" + sessionId + ",\"orgId\":" + orgId + "}";
 			String response = httpPost("http://localhost:8080/appointment/token", json);
 			return extractJsonValue(response, "token");
 		} catch (Exception e) {
