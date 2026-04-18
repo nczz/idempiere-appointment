@@ -72,12 +72,16 @@ public class AppointmentActivator extends Incremental2PackActivator {
 					String sql = stmt.toString().trim();
 					sql = sql.substring(0, sql.length() - 1);
 					try {
-						try (var conn = DB.getConnectionRW()) {
-							try (var ps = conn.createStatement()) {
+						// DDL (ALTER TABLE): use JDBC directly, bypassing iDempiere connection pool
+						if (sql.toUpperCase().startsWith("ALTER ")) {
+							org.compiere.db.CConnection cc = org.compiere.db.CConnection.get();
+							try (var conn = cc.getDataSource().getConnection();
+								 var ps = conn.createStatement()) {
 								ps.execute("SET search_path TO adempiere, public");
 								ps.execute(sql);
 							}
-							if (!conn.getAutoCommit()) conn.commit();
+						} else {
+							DB.executeUpdateEx(sql, null);
 						}
 						executed++;
 					} catch (Exception e) {
