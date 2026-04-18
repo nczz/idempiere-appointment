@@ -51,14 +51,24 @@ public class BookServlet extends HttpServlet {
 		if (resourceIds.length == 0) { error(resp, out, 400, "Missing resourceIds"); return; }
 		if (date == null || startTime == null || endTime == null) { error(resp, out, 400, "Missing date/time"); return; }
 
-		// Get org and client from the resource (WAB servlet has no ZK session context)
-		int orgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
+		// Get client from the resource (WAB servlet has no ZK session context)
 		int clientId = DB.getSQLValue(null, "SELECT AD_Client_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
-		if (orgId < 0 || clientId <= 0) { error(resp, out, 400, "Invalid resource"); return; }
+		if (clientId <= 0) { error(resp, out, 400, "Invalid resource"); return; }
 
 		// Verify resource belongs to the same tenant
 		int tokenClientId = AuthContext.getClientId(req);
 		if (clientId != tokenClientId) { error(resp, out, 403, "Access denied"); return; }
+
+		// Org: use resource's org if specific, otherwise use token's org (user's login org)
+		int resOrgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
+		int orgId = resOrgId > 0 ? resOrgId : AuthContext.getOrgId(req);
+		// If still 0, pick the first non-zero org for this client
+		if (orgId <= 0) {
+			orgId = DB.getSQLValue(null,
+				"SELECT AD_Org_ID FROM AD_Org WHERE AD_Client_ID=? AND AD_Org_ID>0 AND IsActive='Y' ORDER BY AD_Org_ID LIMIT 1",
+				clientId);
+		}
+		if (orgId <= 0) { error(resp, out, 400, "No organization available"); return; }
 
 		// Set up minimal Env context for MResourceAssignment
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
