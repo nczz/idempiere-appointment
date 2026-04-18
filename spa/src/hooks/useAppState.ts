@@ -204,6 +204,10 @@ export function useAppState() {
     });
   }, []);
 
+  const toggleAllResources = useCallback(() => {
+    setSelectedResources(prev => prev.size === resources.length ? new Set() : new Set(resources.map(r => r.id)));
+  }, [resources]);
+
   // ── Toast messages ──────────────────────────────────────────────
 
   const [toasts, setToasts] = useState<{ id: number; msg: string; type: string }[]>([]);
@@ -227,7 +231,7 @@ export function useAppState() {
     loadInit, loadEvents,
     bookAppointment, updateAppointment, cancelAppointment,
     addResource, removeResource,
-    toggleResource, setShowCancelled,
+    toggleResource, toggleAllResources, setShowCancelled,
     setDialog, toast,
   };
 }

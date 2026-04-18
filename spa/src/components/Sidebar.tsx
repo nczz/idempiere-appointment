@@ -9,6 +9,7 @@ interface Props {
   selectedResources: Set<number>;
   showCancelled: boolean;
   onToggleResource: (id: number) => void;
+  onToggleAllResources: () => void;
   onSetShowCancelled: (v: boolean) => void;
   onJumpToDate: (date: string) => void;
   onManageServices: () => void;
@@ -19,7 +20,7 @@ interface Props {
 export default function Sidebar({
   resources, resourceTypes, statusList,
   selectedResources, showCancelled,
-  onToggleResource, onSetShowCancelled, onJumpToDate, onManageServices, onManageResources, onManageStatuses,
+  onToggleResource, onToggleAllResources, onSetShowCancelled, onJumpToDate, onManageServices, onManageResources, onManageStatuses,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Assignment[]>([]);
@@ -72,6 +73,13 @@ export default function Sidebar({
 
       {/* Resource Panel */}
       <div className="sidebar-section">
+        <label className="resource-item" style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', paddingBottom: 4, marginBottom: 4 }}>
+          <input type="checkbox"
+            checked={resources.length > 0 && selectedResources.size === resources.length}
+            ref={el => { if (el) el.indeterminate = selectedResources.size > 0 && selectedResources.size < resources.length; }}
+            onChange={onToggleAllResources} />
+          全選
+        </label>
         {Object.entries(byType).map(([typeId, items]) => {
           const typeName = resourceTypes.find(t => t.id === parseInt(typeId))?.Name || '其他';
           return (

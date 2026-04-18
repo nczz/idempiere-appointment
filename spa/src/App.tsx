@@ -53,6 +53,7 @@ export default function App() {
         selectedResources={state.selectedResources}
         showCancelled={state.showCancelled}
         onToggleResource={state.toggleResource}
+        onToggleAllResources={state.toggleAllResources}
         onSetShowCancelled={state.setShowCancelled}
         onJumpToDate={handleJumpToDate}
         onManageServices={() => setShowServiceMgr(true)}
