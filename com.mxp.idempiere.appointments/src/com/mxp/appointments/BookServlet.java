@@ -54,7 +54,7 @@ public class BookServlet extends HttpServlet {
 		// Get org and client from the resource (WAB servlet has no ZK session context)
 		int orgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
 		int clientId = DB.getSQLValue(null, "SELECT AD_Client_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
-		if (orgId <= 0 || clientId <= 0) { error(resp, out, 400, "Invalid resource"); return; }
+		if (orgId < 0 || clientId <= 0) { error(resp, out, 400, "Invalid resource"); return; }
 
 		// Set up minimal Env context for MResourceAssignment
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
