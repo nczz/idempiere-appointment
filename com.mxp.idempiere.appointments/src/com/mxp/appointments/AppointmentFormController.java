@@ -13,6 +13,7 @@ import org.adempiere.webui.panel.IFormController;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.idempiere.ui.zk.annotation.Form;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
@@ -32,7 +33,11 @@ public class AppointmentFormController implements IFormController {
 		form = new AppointmentForm();
 		String token = requestToken();
 		if (token != null) {
-			form.loadSpa(token);
+			// Build full URL here — Controller constructor runs in ZK execution context
+			String base = Executions.getCurrent().getScheme() + "://"
+					+ Executions.getCurrent().getServerName() + ":"
+					+ Executions.getCurrent().getServerPort();
+			form.loadSpa(base + "/appointment/web/appointments/index.html#token=" + token);
 			setupTokenRefreshBridge();
 		} else {
 			Clients.showNotification("無法取得 API Token，請重新整理頁面",

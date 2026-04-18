@@ -41,13 +41,11 @@ public class AppointmentForm extends CustomForm {
 	 *
 	 * @param token REST API JWT token
 	 */
-	public void loadSpa(String token) {
-		// Use protocol-relative URL to avoid dependency on Executions context
-		String src = "/appointment/web/appointments/index.html#token=" + token;
+	public void loadSpa(String fullUrl) {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			iframe.setSrc(src);
+			iframe.setSrc(fullUrl);
 		} finally {
 			Thread.currentThread().setContextClassLoader(cl);
 		}
