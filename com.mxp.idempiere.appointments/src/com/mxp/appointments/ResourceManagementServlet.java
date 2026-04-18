@@ -165,7 +165,8 @@ public class ResourceManagementServlet extends HttpServlet {
 		rt.setName(name);
 		rt.setValue(name);
 		rt.setIsTimeSlot(true);
-		rt.setC_UOM_ID(101); // Hour
+		rt.setC_UOM_ID(DB.getSQLValue(null,
+			"SELECT C_UOM_ID FROM C_UOM WHERE Name='Hour' AND IsActive='Y'"));
 		// Mandatory FKs — use client's first available values
 		int catId = DB.getSQLValue(null,
 			"SELECT MIN(M_Product_Category_ID) FROM M_Product_Category WHERE AD_Client_ID=? AND IsActive='Y'", clientId);

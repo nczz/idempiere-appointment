@@ -13,6 +13,7 @@ import org.adempiere.webui.panel.IFormController;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.idempiere.ui.zk.annotation.Form;
+import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
@@ -61,7 +62,13 @@ public class AppointmentFormController implements IFormController {
 				return null;
 			}
 			String json = "{\"sessionId\":" + sessionId + "}";
-			String response = httpPost("http://localhost:8080/appointment/token", json);
+			Execution exec = Executions.getCurrent();
+			String scheme = exec.getScheme();
+			String host = exec.getServerName();
+			int port = exec.getServerPort();
+			String portStr = (("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443)) ? "" : ":" + port;
+			String tokenUrl = scheme + "://" + host + portStr + "/appointment/token";
+			String response = httpPost(tokenUrl, json);
 			return extractJsonValue(response, "token");
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Token request failed", e);
