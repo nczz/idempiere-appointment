@@ -329,7 +329,6 @@ async function saveDialog() {
       await api.bookAppointment({
         name, date, startTime, endTime, service, notes,
         resourceIds: checkedResources,
-        orgId: api.getOrgId(),
         bpartnerId: bpId ? parseInt(bpId) : 0,
       });
       toast('預約已建立');

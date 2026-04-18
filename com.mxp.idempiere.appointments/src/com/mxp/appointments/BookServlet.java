@@ -46,12 +46,17 @@ public class BookServlet extends HttpServlet {
 		String notes = parseString(json, "notes");
 		int bpartnerId = parseInt(json, "bpartnerId");
 		int[] resourceIds = parseIntArray(json, "resourceIds");
-		int orgId = parseInt(json, "orgId");
 
 		if (name == null || name.isEmpty()) { error(resp, out, 400, "Missing name"); return; }
 		if (resourceIds.length == 0) { error(resp, out, 400, "Missing resourceIds"); return; }
 		if (date == null || startTime == null || endTime == null) { error(resp, out, 400, "Missing date/time"); return; }
-		if (orgId <= 0) { error(resp, out, 400, "Missing orgId"); return; }
+
+		// Org from session context — servlet runs inside iDempiere, Env has the login context
+		int orgId = Env.getAD_Org_ID(Env.getCtx());
+		if (orgId <= 0) {
+			// Fallback: use the resource's org
+			orgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
+		}
 
 		String startISO = date + "T" + startTime + ":00Z";
 		String endISO = date + "T" + endTime + ":00Z";
