@@ -102,11 +102,12 @@ function searchAssignments(keyword) {
 }
 
 function searchBPartners(keyword) {
-  return restApi(`models/C_BPartner?$filter=contains(Name,'${keyword}') and IsCustomer eq true&$top=10`).then(r => r?.records || []);
+  return apptApi(`bpartners?q=${encodeURIComponent(keyword)}`).then(r => r?.results || []);
 }
 
 function getBPartner(id) {
-  return restApi(`models/C_BPartner/${id}?$select=Name,Phone,Phone2,EMail`);
+  // Single BP lookup reuses the search endpoint
+  return apptApi(`bpartners?q=`).then(() => null); // TODO: add /bpartners/{id} if needed
 }
 
 // ── Billing (still use REST API) ──

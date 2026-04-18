@@ -45,4 +45,13 @@
         <servlet-name>BookServlet</servlet-name>
         <url-pattern>/book</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BPartnerSearchServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.BPartnerSearchServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BPartnerSearchServlet</servlet-name>
+        <url-pattern>/bpartners</url-pattern>
+    </servlet-mapping>
 </web-app>

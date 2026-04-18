@@ -484,15 +484,23 @@ async function onBpSearch() {
     const results = await api.searchBPartners(keyword);
     if (results.length === 0) { container.style.display = 'none'; return; }
     container.innerHTML = results.map(bp =>
-      `<div class="search-result-item" data-id="${bp.id}">${bp.Name}</div>`
+      `<div class="search-result-item" data-id="${bp.id}" data-name="${bp.Name}" data-phone="${bp.Phone || ''}" data-email="${bp.EMail || ''}">${bp.Name}${bp.Phone ? ' 📞' + bp.Phone : ''}</div>`
     ).join('');
     container.style.display = 'block';
     container.querySelectorAll('.search-result-item').forEach(el => {
       el.onclick = () => {
         document.getElementById('dlgBpId').value = el.dataset.id;
-        document.getElementById('dlgName').value = el.textContent;
+        document.getElementById('dlgName').value = el.dataset.name;
         container.style.display = 'none';
-        loadBpInfo(parseInt(el.dataset.id));
+        // Show contact info from search result
+        const info = document.getElementById('dlgBpInfo');
+        const parts = [];
+        if (el.dataset.phone) parts.push(`📞 ${el.dataset.phone}`);
+        if (el.dataset.email) parts.push(`✉️ ${el.dataset.email}`);
+        if (parts.length > 0) {
+          info.innerHTML = parts.join(' &nbsp;|&nbsp; ');
+          info.style.display = 'block';
+        }
       };
     });
   } catch (e) { console.error('BPartner search failed:', e); container.style.display = 'none'; }
