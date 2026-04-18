@@ -111,6 +111,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>StatusServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.StatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StatusServlet</servlet-name>
+        <url-pattern>/statuses</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>SearchServlet</servlet-name>
         <servlet-class>com.mxp.appointments.SearchServlet</servlet-class>
     </servlet>

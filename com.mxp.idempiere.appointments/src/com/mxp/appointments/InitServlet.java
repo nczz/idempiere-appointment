@@ -67,7 +67,7 @@ public class InitServlet extends HttpServlet {
 			});
 			json.append("],");
 
-			// 3. Status List (from X_AppointmentStatus reference)
+			// 3. Status List
 			json.append("\"statusList\":[");
 			sql = "SELECT rl.Value, rl.Name, rl.Description "
 					+ "FROM AD_Ref_List rl "
