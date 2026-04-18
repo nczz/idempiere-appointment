@@ -48,6 +48,7 @@ export default function AppointmentDialog({
       setService(appt.service);
       setNotes(appt.notes);
       setBpId(appt.bpartnerId || 0);
+      if (appt.bpartnerId) setBpInfo(appt.name.split(' - ')[0]);
     } else {
       setName('');
       setDate(dialog.defaultDate || new Date().toISOString().slice(0, 10));
@@ -86,7 +87,7 @@ export default function AppointmentDialog({
     setName(bp.Name);
     setBpResults([]);
     setBpSearch('');
-    const parts: string[] = [];
+    const parts = [bp.Name];
     if (bp.Phone) parts.push(`📞 ${bp.Phone}`);
     if (bp.EMail) parts.push(`✉️ ${bp.EMail}`);
     setBpInfo(parts.join(' | '));
@@ -173,7 +174,12 @@ export default function AppointmentDialog({
               ))}
             </div>
           )}
-          {bpInfo && <div style={{ fontSize: '0.85em', marginTop: 4, padding: 8, background: '#f9fafb', borderRadius: 4 }}>{bpInfo}</div>}
+          {bpInfo && (
+            <div style={{ fontSize: '0.85em', marginTop: 4, padding: '6px 8px', background: '#EFF6FF', borderRadius: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #BFDBFE' }}>
+              <span>✅ {bpInfo}</span>
+              <button type="button" onClick={() => { setBpId(0); setBpInfo(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1em', color: '#999' }}>✕</button>
+            </div>
+          )}
         </div>
 
         <div className="dialog-field">
