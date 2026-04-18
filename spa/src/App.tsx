@@ -50,10 +50,14 @@ export default function App() {
         resources={state.resources}
         resourceTypes={state.resourceTypes}
         statusList={state.statusList}
+        serviceList={state.serviceList}
         selectedResources={state.selectedResources}
+        selectedServices={state.selectedServices}
         showCancelled={state.showCancelled}
         onToggleResource={state.toggleResource}
         onToggleAllResources={state.toggleAllResources}
+        onToggleService={state.toggleService}
+        onToggleAllServices={state.toggleAllServices}
         onSetShowCancelled={state.setShowCancelled}
         onJumpToDate={handleJumpToDate}
         onManageServices={() => setShowServiceMgr(true)}

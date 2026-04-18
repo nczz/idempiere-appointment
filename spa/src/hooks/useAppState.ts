@@ -60,6 +60,7 @@ export function useAppState() {
   const [serviceList, setServiceList] = useState<ServicePreset[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedResources, setSelectedResources] = useState<Set<number>>(new Set());
+  const [selectedServices, setSelectedServices] = useState<Set<string>>(new Set());
   const [showCancelled, setShowCancelled] = useState(false);
   const [dialog, setDialog] = useState<DialogState | null>(null);
   const [loading, setLoading] = useState(false);
@@ -80,9 +81,10 @@ export function useAppState() {
       const hasSelected = appt.resources.some(r => selectedResources.has(r.resourceId));
       if (!hasSelected) return false;
       if (!showCancelled && TERMINAL_STATUSES.includes(appt.status)) return false;
+      if (selectedServices.size > 0 && appt.service && !selectedServices.has(appt.service)) return false;
       return true;
     });
-  }, [appointments, selectedResources, showCancelled]);
+  }, [appointments, selectedResources, selectedServices, showCancelled]);
 
   // ── Load initial data ───────────────────────────────────────────
 
@@ -101,6 +103,7 @@ export function useAppState() {
       setServiceList(data.serviceList || []);
       // Default: all resources selected
       setSelectedResources(new Set(res.map(r => r.id)));
+      setSelectedServices(new Set((data.serviceList || []).map((s: ServicePreset) => s.Name)));
       // Load events for current date range (token is now ready)
       const { start, end } = dateRangeRef.current;
       if (start && end) {
@@ -208,6 +211,18 @@ export function useAppState() {
     setSelectedResources(prev => prev.size === resources.length ? new Set() : new Set(resources.map(r => r.id)));
   }, [resources]);
 
+  const toggleService = useCallback((name: string) => {
+    setSelectedServices(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name); else next.add(name);
+      return next;
+    });
+  }, []);
+
+  const toggleAllServices = useCallback(() => {
+    setSelectedServices(prev => prev.size === serviceList.length ? new Set() : new Set(serviceList.map(s => s.Name)));
+  }, [serviceList]);
+
   // ── Toast messages ──────────────────────────────────────────────
 
   const [toasts, setToasts] = useState<{ id: number; msg: string; type: string }[]>([]);
@@ -231,7 +246,7 @@ export function useAppState() {
     loadInit, loadEvents,
     bookAppointment, updateAppointment, cancelAppointment,
     addResource, removeResource,
-    toggleResource, toggleAllResources, setShowCancelled,
+    toggleResource, toggleAllResources, selectedServices, toggleService, toggleAllServices, setShowCancelled,
     setDialog, toast,
   };
 }

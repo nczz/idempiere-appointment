@@ -6,10 +6,14 @@ interface Props {
   resources: Resource[];
   resourceTypes: ResourceType[];
   statusList: Status[];
+  serviceList: { Name: string }[];
   selectedResources: Set<number>;
+  selectedServices: Set<string>;
   showCancelled: boolean;
   onToggleResource: (id: number) => void;
   onToggleAllResources: () => void;
+  onToggleService: (name: string) => void;
+  onToggleAllServices: () => void;
   onSetShowCancelled: (v: boolean) => void;
   onJumpToDate: (date: string) => void;
   onManageServices: () => void;
@@ -18,9 +22,10 @@ interface Props {
 }
 
 export default function Sidebar({
-  resources, resourceTypes, statusList,
-  selectedResources, showCancelled,
-  onToggleResource, onToggleAllResources, onSetShowCancelled, onJumpToDate, onManageServices, onManageResources, onManageStatuses,
+  resources, resourceTypes, statusList, serviceList,
+  selectedResources, selectedServices, showCancelled,
+  onToggleResource, onToggleAllResources, onToggleService, onToggleAllServices,
+  onSetShowCancelled, onJumpToDate, onManageServices, onManageResources, onManageStatuses,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Assignment[]>([]);
@@ -96,6 +101,26 @@ export default function Sidebar({
           );
         })}
       </div>
+
+      {/* Service Filter */}
+      {serviceList.length > 0 && (
+        <div className="sidebar-section">
+          <label className="resource-item" style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', paddingBottom: 4, marginBottom: 4 }}>
+            <input type="checkbox"
+              checked={serviceList.length > 0 && selectedServices.size === serviceList.length}
+              ref={el => { if (el) el.indeterminate = selectedServices.size > 0 && selectedServices.size < serviceList.length; }}
+              onChange={onToggleAllServices} />
+            服務篩選
+          </label>
+          {serviceList.map(s => (
+            <label key={s.Name} className="resource-item">
+              <input type="checkbox" checked={selectedServices.has(s.Name)}
+                onChange={() => onToggleService(s.Name)} />
+              {s.Name}
+            </label>
+          ))}
+        </div>
+      )}
 
       {/* Status Legend */}
       <div className="sidebar-section">
