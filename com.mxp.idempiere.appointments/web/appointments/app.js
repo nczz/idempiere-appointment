@@ -284,19 +284,12 @@ function renderDlgResources(assignment) {
         try {
           await api.groupRemoveResource(raId);
           toast('資源已移除');
-          await reloadCurrentView();
           // Ensure all remaining group resources are selected
           const gid = desc.group_id;
-          if (gid) {
-            assignments.filter(a => { const d = parseDesc(a); return d.group_id === gid; })
-              .forEach(a => {
-                const rid = getResourceId(a);
-                selectedResources.add(rid);
-                const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
-                if (cb) cb.checked = true;
-              });
-            renderEvents();
-          }
+          const remainingRids = gid
+            ? assignments.filter(a => parseDesc(a).group_id === gid && a.id !== raId).map(a => getResourceId(a))
+            : [];
+          await refreshAfterAction(remainingRids);
           const remaining = gid
             ? assignments.find(a => { const d = parseDesc(a); return d.group_id === gid; })
             : assignments.find(a => a.id === assignment.id);
@@ -320,11 +313,8 @@ function renderDlgResources(assignment) {
         if (!rid) return;
         try {
           await api.groupAddResource(assignment.id, rid);
-          selectedResources.add(rid);
-          const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
-          if (cb) cb.checked = true;
           toast('資源已加入');
-          await reloadCurrentView();
+          await refreshAfterAction([rid]);
           const updated = assignments.find(a => a.id === assignment.id);
           if (updated) renderDlgResources(updated);
         } catch (err) {
@@ -368,9 +358,6 @@ async function saveDialog() {
       });
       // Ensure edited resource stays visible
       const rid = getResourceId(editingAssignment);
-      selectedResources.add(rid);
-      const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
-      if (cb) cb.checked = true;
       toast('預約已更新');
     } catch (e) {
       toast('更新失敗：' + (e.message || e), 'error');
@@ -413,7 +400,11 @@ async function saveDialog() {
     }
   }
   closeDialog();
-  reloadCurrentView();
+  // Collect all involved resource IDs
+  const involvedRids = editingAssignment
+    ? [getResourceId(editingAssignment)]
+    : [...document.querySelectorAll('.dlg-resource-cb:checked')].map(cb => parseInt(cb.value));
+  await refreshAfterAction(involvedRids);
 }
 
 async function cancelAppointment() {
@@ -436,7 +427,7 @@ async function cancelAppointment() {
     }
     toast('預約已取消');
     closeDialog();
-    reloadCurrentView();
+    await refreshAfterAction([getResourceId(editingAssignment)]);
   } catch (e) {
     toast('取消失敗', 'error');
   }
@@ -471,7 +462,7 @@ async function copyToNextWeek() {
     await api.createAssignment(data);
     toast('已複製到下週');
     closeDialog();
-    reloadCurrentView();
+    await refreshAfterAction([resId]);
   } catch (e) {
     toast('複製失敗', 'error');
   }
@@ -514,7 +505,7 @@ async function createBill() {
     await api.updateAssignment(editingAssignment.id, { Description: JSON.stringify(desc) });
     toast('帳單已建立並完成');
     closeDialog();
-    reloadCurrentView();
+    await refreshAfterAction([getResourceId(editingAssignment)]);
   } catch (e) {
     toast('建立帳單失敗：' + (e.message || e), 'error');
   }
@@ -722,6 +713,19 @@ function addDays(isoStr, days) {
 async function reloadCurrentView() {
   const view = calendar.view;
   await loadAssignments(view.activeStart.toISOString(), view.activeEnd.toISOString());
+}
+
+/**
+ * After any write operation: ensure involved resources are selected, reload from server, re-render.
+ * @param {number[]} resourceIds - resources that should be visible after this action
+ */
+async function refreshAfterAction(resourceIds = []) {
+  resourceIds.forEach(rid => {
+    selectedResources.add(rid);
+    const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
+    if (cb) cb.checked = true;
+  });
+  await reloadCurrentView();
 }
 
 function toast(msg, type = 'info') {
