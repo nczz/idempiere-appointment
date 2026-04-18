@@ -495,7 +495,7 @@ async function onBpSearch() {
         loadBpInfo(parseInt(el.dataset.id));
       };
     });
-  } catch (_) { container.style.display = 'none'; }
+  } catch (e) { console.error('BPartner search failed:', e); container.style.display = 'none'; }
 }
 
 async function loadBpInfo(bpId) {
