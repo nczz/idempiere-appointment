@@ -166,6 +166,10 @@ public class ResourceManagementServlet extends HttpServlet {
 		rt.setValue(name);
 		rt.setIsTimeSlot(true);
 		rt.setC_UOM_ID(101); // Hour
+		// M_Product_Category_ID is mandatory — use client's first category
+		int catId = DB.getSQLValue(null,
+			"SELECT MIN(M_Product_Category_ID) FROM M_Product_Category WHERE AD_Client_ID=? AND IsActive='Y'", clientId);
+		if (catId > 0) rt.setM_Product_Category_ID(catId);
 		rt.setTimeSlotStart(java.sql.Timestamp.valueOf("2000-01-01 09:00:00"));
 		rt.setTimeSlotEnd(java.sql.Timestamp.valueOf("2000-01-01 18:00:00"));
 		rt.setOnMonday(true); rt.setOnTuesday(true); rt.setOnWednesday(true);
