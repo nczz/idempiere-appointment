@@ -22,8 +22,8 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
 
   async function load() {
     const [t, r] = await Promise.all([
-      fetch(`${location.origin}/appointment/resource-types`).then(r => r.json()),
-      fetch(`${location.origin}/appointment/resources`).then(r => r.json()),
+      api.apptFetch<{ types: ResType[] }>('resource-types'),
+      api.apptFetch<{ resources: Res[] }>('resources'),
     ]);
     setTypes(t.types || []);
     setResources(r.resources || []);
@@ -31,20 +31,11 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
 
   useEffect(() => { load(); }, []);
 
-  async function apiCall(path: string, opts: RequestInit) {
-    const res = await fetch(`${location.origin}/appointment/${path}`, {
-      ...opts, headers: { 'Content-Type': 'application/json', ...opts.headers },
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.error || 'Failed');
-    return json;
-  }
-
   async function addType() {
     if (!newTypeName.trim()) return;
     setLoading(true);
     try {
-      await apiCall('resource-types', { method: 'POST', body: JSON.stringify({ name: newTypeName.trim() }) });
+      await api.apptFetch('resource-types', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newTypeName.trim() }) });
       setNewTypeName('');
       await load(); onUpdated();
     } catch (e) { alert(e instanceof Error ? e.message : 'Failed'); }
@@ -56,7 +47,7 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
     if (!name) return;
     setLoading(true);
     try {
-      await apiCall('resources', { method: 'POST', body: JSON.stringify({ name, resourceTypeId: String(typeId) }) });
+      await api.apptFetch('resources', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, resourceTypeId: String(typeId) }) });
       setNewResName(prev => ({ ...prev, [typeId]: '' }));
       await load(); onUpdated();
     } catch (e) { alert(e instanceof Error ? e.message : 'Failed'); }
@@ -70,7 +61,7 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
       const path = editTarget === 'type' ? 'resource-types' : 'resources';
       const body: Record<string, string> = { id: String(editId), name: editName.trim() };
       if (editTarget === 'res') body.color = editColor;
-      await apiCall(path, { method: 'PUT', body: JSON.stringify(body) });
+      await api.apptFetch(path, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       setEditId(null);
       await load(); onUpdated();
     } catch (e) { alert(e instanceof Error ? e.message : 'Failed'); }
@@ -82,7 +73,7 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
     setLoading(true);
     try {
       const path = target === 'type' ? 'resource-types' : 'resources';
-      await apiCall(`${path}?id=${id}`, { method: 'DELETE' });
+      await api.apptFetch(`${path}?id=${id}`, { method: 'DELETE' });
       await load(); onUpdated();
     } catch (e) { alert(e instanceof Error ? e.message : 'Failed'); }
     setLoading(false);

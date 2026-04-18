@@ -41,7 +41,7 @@ export function hasToken(): boolean {
 
 // ── Custom API (no auth, same origin) ─────────────────────────────
 
-async function apptFetch<T>(path: string, opts?: RequestInit): Promise<T> {
+export async function apptFetch<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${APPT_BASE}/${path}`, {
     ...opts,
     headers: { Authorization: `Bearer ${token}`, ...opts?.headers },
