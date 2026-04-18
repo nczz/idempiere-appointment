@@ -23,7 +23,7 @@
           </execution>
         </executions>
         <configuration>
-          <includeAllDependencies>true</includeAllDependencies>
+          <includeAllDependencies>false</includeAllDependencies>
           <xzCompress>false</xzCompress>
         </configuration>
       </plugin>
