@@ -66,13 +66,18 @@ public class AppointmentActivator extends Incremental2PackActivator {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 				if (line.isEmpty() || line.startsWith("--")) continue;
-				if (line.equalsIgnoreCase("SET search_path TO adempiere, public;")) continue;
+				if (line.toUpperCase().startsWith("SET SEARCH_PATH")) continue;
 				stmt.append(line).append(" ");
 				if (line.endsWith(";")) {
 					String sql = stmt.toString().trim();
-					sql = sql.substring(0, sql.length() - 1); // remove trailing ;
+					sql = sql.substring(0, sql.length() - 1);
 					try {
-						DB.executeUpdateEx(sql, null);
+						// Use raw JDBC — DB.executeUpdateEx doesn't handle DDL (ALTER TABLE)
+						try (var conn = DB.getConnectionRW();
+							 var ps = conn.prepareStatement(sql)) {
+							ps.execute();
+							conn.commit();
+						}
 						executed++;
 					} catch (Exception e) {
 						log.log(Level.WARNING, "SQL failed: " + sql.substring(0, Math.min(80, sql.length())), e);
