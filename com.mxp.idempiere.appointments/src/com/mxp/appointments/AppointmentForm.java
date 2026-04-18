@@ -33,7 +33,7 @@ public class AppointmentForm extends CustomForm {
 
 		zoomData = new Textbox();
 		zoomData.setId("zoomData");
-		zoomData.setVisible(false);
+		zoomData.setStyle("display:none");
 		appendChild(zoomData);
 
 		setWidth("100%");
