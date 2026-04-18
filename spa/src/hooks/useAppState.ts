@@ -82,7 +82,8 @@ export function useAppState() {
       const hasSelected = appt.resources.some(r => selectedResources.has(r.resourceId));
       if (!hasSelected) return false;
       if (!showCancelled && TERMINAL_STATUSES.includes(appt.status)) return false;
-      if (selectedServices.size > 0 && appt.service && !selectedServices.has(appt.service)) return false;
+      if (selectedServices.size === 0) return false;
+      if (appt.service && !selectedServices.has(appt.service)) return false;
       return true;
     });
   }, [appointments, selectedResources, selectedServices, showCancelled]);
