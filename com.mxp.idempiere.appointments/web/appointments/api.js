@@ -91,6 +91,18 @@ async function bookAppointment(data) {
   return json;
 }
 
+/** Add a resource to an existing appointment group */
+async function groupAddResource(assignmentId, resourceId) {
+  const res = await fetch(`${APPT_BASE}/group-add`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ assignmentId, resourceId }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || res.statusText);
+  return json;
+}
+
 function createAssignment(data) { return post('models/S_ResourceAssignment', data); }
 function updateAssignment(id, data) {
   return fetch(`${APPT_BASE}/update?id=${id}`, {
@@ -127,7 +139,7 @@ function completeOrder(orderId) {
 export default {
   init, getOrgId, getClientId,
   getInit, getEvents,
-  bookAppointment,
+  bookAppointment, groupAddResource,
   createAssignment, updateAssignment, deleteAssignment,
   searchAssignments, searchBPartners, getBPartner,
   createOrder, createOrderLine, completeOrder,

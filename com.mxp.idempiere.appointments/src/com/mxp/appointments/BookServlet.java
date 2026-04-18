@@ -60,10 +60,20 @@ public class BookServlet extends HttpServlet {
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, orgId);
 
-		String startISO = date + "T" + startTime + ":00Z";
-		String endISO = date + "T" + endTime + ":00Z";
-		Timestamp tsStart = Timestamp.valueOf(startISO.replace("T", " ").replace("Z", ""));
-		Timestamp tsEnd = Timestamp.valueOf(endISO.replace("T", " ").replace("Z", ""));
+		String startISO = date + " " + startTime + ":00";
+		String endISO = date + " " + endTime + ":00";
+		Timestamp tsStart = Timestamp.valueOf(startISO);
+		Timestamp tsEnd = Timestamp.valueOf(endISO);
+
+		// Conflict check
+		for (int rid : resourceIds) {
+			String conflict = ConflictCheck.check(rid, startISO, endISO, 0);
+			if (conflict != null) {
+				String resName = DB.getSQLValueString(null, "SELECT Name FROM S_Resource WHERE S_Resource_ID=?", rid);
+				error(resp, out, 409, resName + " 在此時段已有預約：" + conflict);
+				return;
+			}
+		}
 
 		String displayName = name + (service != null && !service.isEmpty() ? " - " + service : "");
 		String groupId = resourceIds.length > 1 ? UUID.randomUUID().toString() : null;

@@ -247,13 +247,39 @@ function renderDlgResources(assignment) {
     : assignment ? [getResourceId(assignment)] : [];
 
   if (assignment) {
-    // Edit mode: show only linked resources as read-only tags
+    // Edit mode: show only linked resources as read-only tags + add button
     const linked = resources.filter(r => groupedIds.includes(r.id));
-    container.innerHTML = linked.map(r =>
+    const unlinked = resources.filter(r => !groupedIds.includes(r.id));
+    let html = linked.map(r =>
       `<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:12px;font-size:12px;background:${r._color};color:#fff;">
         ${r.Name}
       </span>`
     ).join('');
+    if (unlinked.length > 0) {
+      html += `<div style="margin-top:6px;">
+        <select id="dlgAddResource" style="font-size:12px;padding:2px 4px;">
+          <option value="">＋ 加入資源...</option>
+          ${unlinked.map(r => `<option value="${r.id}">${r.Name}</option>`).join('')}
+        </select>
+      </div>`;
+    }
+    container.innerHTML = html;
+    const addSel = document.getElementById('dlgAddResource');
+    if (addSel) {
+      addSel.onchange = async () => {
+        const rid = parseInt(addSel.value);
+        if (!rid) return;
+        try {
+          await api.groupAddResource(assignment.id, rid);
+          toast('資源已加入');
+          closeDialog();
+          reloadCurrentView();
+        } catch (e) {
+          toast(e.message, 'error');
+          addSel.value = '';
+        }
+      };
+    }
   } else {
     // Create mode: checkboxes for resource selection
     container.innerHTML = resources.map(r =>

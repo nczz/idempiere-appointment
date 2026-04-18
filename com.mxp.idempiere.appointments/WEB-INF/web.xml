@@ -64,4 +64,13 @@
         <servlet-name>UpdateServlet</servlet-name>
         <url-pattern>/update</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GroupAddServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.GroupAddServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GroupAddServlet</servlet-name>
+        <url-pattern>/group-add</url-pattern>
+    </servlet-mapping>
 </web-app>
