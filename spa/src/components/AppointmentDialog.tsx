@@ -64,14 +64,9 @@ export default function AppointmentDialog({
     setBpInfo('');
   }, [dialog, isEdit, appt]);
 
-  // Service preset → auto-calculate end time
+  // Service preset — display only, no time auto-calculation
   function handleServiceChange(svc: string) {
     setService(svc);
-    const preset = SERVICE_PRESETS.find(s => s.name === svc);
-    if (!preset || !startTime) return;
-    const [h, m] = startTime.split(':').map(Number);
-    const endMin = h * 60 + m + preset.minutes;
-    setEndTime(`${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`);
   }
 
   // BPartner search
@@ -208,14 +203,28 @@ export default function AppointmentDialog({
             </div>
           ) : (
             <div>
-              {resources.map(r => (
-                <label key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={selectedRids.includes(r.id)}
-                    onChange={e => setSelectedRids(prev => e.target.checked ? [...prev, r.id] : prev.filter(id => id !== r.id))} />
-                  <span className="color-dot" style={{ background: r._color }} />
-                  <span>{r.Name}</span>
-                </label>
-              ))}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+                {selectedRids.map(rid => {
+                  const res = resources.find(x => x.id === rid);
+                  if (!res) return null;
+                  return (
+                    <span key={rid} style={{ display: 'inline-flex', alignItems: 'center', gap: 2, padding: '2px 8px', borderRadius: 12, fontSize: 12, background: res._color, color: '#fff' }}>
+                      {res.Name}
+                      <span style={{ cursor: 'pointer', marginLeft: 2, fontSize: 14, opacity: 0.7 }}
+                        onClick={() => setSelectedRids(prev => prev.filter(id => id !== rid))}>✕</span>
+                    </span>
+                  );
+                })}
+              </div>
+              {resources.filter(r => !selectedRids.includes(r.id)).length > 0 && (
+                <select value="" onChange={e => { const v = parseInt(e.target.value); if (v) setSelectedRids(prev => [...prev, v]); }}
+                  style={{ fontSize: 12, padding: '2px 4px' }}>
+                  <option value="">＋ 加入資源...</option>
+                  {resources.filter(r => !selectedRids.includes(r.id)).map(r => (
+                    <option key={r.id} value={r.id}>{r.Name}</option>
+                  ))}
+                </select>
+              )}
             </div>
           )}
         </div>
