@@ -37,12 +37,14 @@ public class BPartnerSearchServlet extends HttpServlet {
 					+ "FROM C_BPartner bp "
 					+ "LEFT JOIN AD_User u ON u.C_BPartner_ID = bp.C_BPartner_ID AND u.IsActive='Y' "
 					+ "WHERE bp.IsActive='Y' "
-					+ "AND LOWER(bp.Name) LIKE ? "
+					+ "AND (LOWER(bp.Name) LIKE ? OR LOWER(bp.Value) LIKE ?) "
 					+ "ORDER BY bp.Name LIMIT 10";
 
 			boolean first = true;
 			try (PreparedStatement ps = DB.prepareStatement(sql, null)) {
-				ps.setString(1, "%" + q.trim().toLowerCase() + "%");
+				String pattern = "%" + q.trim().toLowerCase() + "%";
+				ps.setString(1, pattern);
+				ps.setString(2, pattern);
 				try (ResultSet rs = ps.executeQuery()) {
 					while (rs.next()) {
 						if (!first) json.append(",");

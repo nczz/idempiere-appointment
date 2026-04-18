@@ -209,25 +209,25 @@ export default function AppointmentDialog({
           ) : (
             <div>
               {resources.map(r => (
-                <label key={r.id} style={{ display: 'block', margin: '2px 0' }}>
+                <label key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0', cursor: 'pointer' }}>
                   <input type="checkbox" checked={selectedRids.includes(r.id)}
                     onChange={e => setSelectedRids(prev => e.target.checked ? [...prev, r.id] : prev.filter(id => id !== r.id))} />
-                  <span className="color-dot" style={{ background: r._color }} /> {r.Name}
+                  <span className="color-dot" style={{ background: r._color }} />
+                  <span>{r.Name}</span>
                 </label>
               ))}
             </div>
           )}
         </div>
 
-        {!isEdit && (
-          <div className="dialog-field">
-            <label>服務項目</label>
-            <select value={service} onChange={e => handleServiceChange(e.target.value)}>
-              <option value="">-- 選擇 --</option>
-              {SERVICE_PRESETS.map(s => <option key={s.name} value={s.name}>{s.name} ({s.minutes}分)</option>)}
-            </select>
-          </div>
-        )}
+        {/* Service — show in both create and edit */}
+        <div className="dialog-field">
+          <label>服務項目</label>
+          <select value={service} onChange={e => handleServiceChange(e.target.value)}>
+            <option value="">-- 選擇 --</option>
+            {SERVICE_PRESETS.map(s => <option key={s.name} value={s.name}>{s.name} ({s.minutes}分)</option>)}
+          </select>
+        </div>
 
         <div className="dialog-field">
           <label>日期</label>

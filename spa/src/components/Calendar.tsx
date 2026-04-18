@@ -60,7 +60,14 @@ export default function Calendar({ appointments, resources, statusList, onDatesS
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay',
+        right: 'dayGridMonth,timeGridWeek,timeGrid3Day,timeGridDay,listDay',
+      }}
+      views={{
+        timeGrid3Day: {
+          type: 'timeGrid',
+          duration: { days: 3 },
+          buttonText: '3日',
+        },
       }}
       buttonText={{ month: '月', week: '週', day: '日', today: '今天', list: '列表' }}
       slotDuration="00:15:00"
