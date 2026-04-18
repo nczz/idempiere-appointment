@@ -33,12 +33,12 @@ WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-ref
 
 INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
   AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000102, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000100, 'CHK', '已報到', '#10B981', 'U', 'mxp-appt-reflist-chk'
+SELECT 1000102, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000100, 'CHK', '已到場', '#10B981', 'U', 'mxp-appt-reflist-chk'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-reflist-chk');
 
 INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
   AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000103, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000100, 'INP', '看診中', '#F97316', 'U', 'mxp-appt-reflist-inp'
+SELECT 1000103, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000100, 'INP', '進行中', '#F97316', 'U', 'mxp-appt-reflist-inp'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-reflist-inp');
 
 INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
@@ -48,7 +48,7 @@ WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-ref
 
 INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
   AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000105, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000100, 'ABS', '爽約', '#EF4444', 'U', 'mxp-appt-reflist-abs'
+SELECT 1000105, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000100, 'ABS', '未到', '#EF4444', 'U', 'mxp-appt-reflist-abs'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-reflist-abs');
 
 INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
@@ -79,7 +79,7 @@ INSERT INTO AD_Column (AD_Column_ID, AD_Client_ID, AD_Org_ID, IsActive, Created,
   IsToolbarButton, IsAllowLogging, IsAllowCopy, IsSecure, IsHtml, IsAutocomplete, IsPartitionKey,
   EntityType, AD_Column_UU, Version, IsKey, IsParent, IsTranslated, IsIdentifier, IsSelectionColumn)
 SELECT 1000201, 0, 0, 'Y', NOW(), 100, NOW(), 100,
-  485, 187, 'C_BPartner_ID', 'Business Partner', 'Patient linked to this appointment',
+  485, 187, 'C_BPartner_ID', 'Business Partner', 'Business partner linked to this appointment',
   19,
   10, 'N', 'Y', 'Y',
   'N', 'Y', 'Y', 'N', 'N', 'N', 'N',
@@ -154,40 +154,7 @@ INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Crea
 SELECT 1000110, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'CONSULT', '諮詢', '15', 'U', 'mxp-appt-svc-consult'
 WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-consult');
 
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000111, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'CLEAN', '洗牙', '30', 'U', 'mxp-appt-svc-clean'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-clean');
-
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000112, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'FILL', '補牙', '30', 'U', 'mxp-appt-svc-fill'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-fill');
-
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000113, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'ROOT', '根管治療', '60', 'U', 'mxp-appt-svc-root'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-root');
-
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000114, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'IMPLANT', '植牙', '90', 'U', 'mxp-appt-svc-implant'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-implant');
-
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000115, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'ORTHO', '矯正回診', '30', 'U', 'mxp-appt-svc-ortho'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-ortho');
-
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000116, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'EXTRACT', '拔牙', '45', 'U', 'mxp-appt-svc-extract'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-extract');
-
-INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,
-  AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU)
-SELECT 1000117, 0, 0, 'Y', NOW(), 100, NOW(), 100, 1000101, 'OTHER', '其他', '30', 'U', 'mxp-appt-svc-other'
-WHERE NOT EXISTS (SELECT 1 FROM AD_Ref_List WHERE AD_Ref_List_UU = 'mxp-appt-svc-other');
+-- (Service presets are managed from the SPA's Service Manager. No industry-specific defaults here.)
 
 -- 11. Translations (required for zh_TW locale to display menu items)
 INSERT INTO AD_Menu_Trl (AD_Menu_ID, AD_Language, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy,

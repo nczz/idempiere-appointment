@@ -7,13 +7,13 @@
 ## 功能概覽
 
 - 📅 FullCalendar 日/週/月/列表檢視
-- 🎨 預約狀態顏色（預約中、已確認、已報到、看診中、已完成、爽約、取消）
-- 👥 多資源管理（醫師、診間），依類型分組
+- 🎨 預約狀態顏色（預約中、已確認、已到場、進行中、已完成、未到、取消）
+- 👥 多資源管理，依類型分組
 - 🔍 搜尋預約、跳轉日期
 - ➕ 點擊時段新增預約，選擇服務項目自動計算時長
 - ✏️ 點擊事件編輯狀態、時間、備註
 - 🚫 衝突檢測（IsSingleAssignment 資源）
-- 📋 複製到下週（定期回診）
+- 📋 複製到下週（定期回訪）
 - 🔐 Session-based JWT — 誰登入就用誰的權限，不需要 service account
 
 ## 系統需求
@@ -143,7 +143,7 @@ ZK Session（已登入使用者）
                     ├── POST /appointment/book      建立預約
                     ├── PUT /appointment/update     更新預約
                     ├── POST /appointment/group-add 加入資源
-                    └── GET /appointment/bpartners  搜尋病患
+                    └── GET /appointment/bpartners  搜尋客戶
 ```
 
 ### Token 機制
@@ -159,10 +159,10 @@ ZK Session（已登入使用者）
 |------|------|------|:----:|
 | SCH | 預約中 | 🟡 #FBBF24 | ✅ |
 | CFM | 已確認 | 🔵 #3B82F6 | ✅ |
-| CHK | 已報到 | 🟢 #10B981 | ✅ |
-| INP | 看診中 | 🟠 #F97316 | ✅ |
+| CHK | 已到場 | 🟢 #10B981 | ✅ |
+| INP | 進行中 | 🟠 #F97316 | ✅ |
 | DON | 已完成 | ⚪ #9CA3AF | ✅ |
-| ABS | 爽約   | 🔴 #EF4444 | ❌ |
+| ABS | 未到   | 🔴 #EF4444 | ❌ |
 | CXL | 取消   | ⬜ #D1D5DB | ❌ |
 
 狀態和顏色可在 iDempiere 後台（AD_Ref_List）自行修改，不需要改程式碼。
@@ -236,7 +236,7 @@ mvn verify -Didempiere.core.repository.url=file:///path/to/iDempiere/org.idempie
 **正式部署（使用 p2 update site）：**
 ```bash
 cd /path/to/idempiere-server
-./update-rest-extensions.sh /path/to/com.mxp.idempiere.appointments.p2/target/repository/
+./update-prd.sh file:///path/to/com.mxp.idempiere.appointments.p2/target/repository/ com.mxp.idempiere.appointments
 systemctl restart idempiere
 ```
 

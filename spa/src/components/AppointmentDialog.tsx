@@ -158,12 +158,12 @@ export default function AppointmentDialog({
 
         <div className="dialog-field">
           <label>姓名</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="病患姓名" />
+          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="客戶姓名" />
         </div>
 
         <div className="dialog-field">
-          <label>病患搜尋</label>
-          <input type="text" value={bpSearch} onChange={e => setBpSearch(e.target.value)} placeholder="搜尋已有病患..." />
+          <label>客戶搜尋</label>
+          <input type="text" value={bpSearch} onChange={e => setBpSearch(e.target.value)} placeholder="搜尋已有客戶..." />
           {bpResults.length > 0 && (
             <div className="search-results" style={{ display: 'block' }}>
               {bpResults.map(bp => (
