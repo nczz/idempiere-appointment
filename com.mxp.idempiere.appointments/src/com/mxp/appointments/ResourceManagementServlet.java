@@ -49,6 +49,7 @@ public class ResourceManagementServlet extends HttpServlet {
 		PrintWriter out = resp.getWriter();
 		String json = readBody(req);
 		String path = req.getServletPath();
+		Env.setContext(Env.getCtx(), "#AD_User_ID", AuthContext.getUserId(req));
 
 		try {
 			if (path.contains("resource-types")) {
@@ -70,16 +71,17 @@ public class ResourceManagementServlet extends HttpServlet {
 		int id = parseInt(parseStr(json, "id"), -1);
 		String name = parseStr(json, "name");
 		if (id <= 0 || name == null) { error(resp, out, 400, "Missing id or name"); return; }
+		int userId = AuthContext.getUserId(req);
 
 		String table = req.getServletPath().contains("resource-types") ? "S_ResourceType" : "S_Resource";
 		try {
 			if (table.equals("S_Resource")) {
 				String color = parseStr(json, "color");
-				DB.executeUpdateEx("UPDATE S_Resource SET Name=?, X_Color=?, Updated=NOW() WHERE S_Resource_ID=?",
-					new Object[]{name, color, id}, null);
+				DB.executeUpdateEx("UPDATE S_Resource SET Name=?, X_Color=?, Updated=NOW(), UpdatedBy=? WHERE S_Resource_ID=?",
+					new Object[]{name, color, userId, id}, null);
 			} else {
-				DB.executeUpdateEx("UPDATE S_ResourceType SET Name=?, Updated=NOW() WHERE S_ResourceType_ID=?",
-					new Object[]{name, id}, null);
+				DB.executeUpdateEx("UPDATE S_ResourceType SET Name=?, Updated=NOW(), UpdatedBy=? WHERE S_ResourceType_ID=?",
+					new Object[]{name, userId, id}, null);
 			}
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
@@ -93,11 +95,12 @@ public class ResourceManagementServlet extends HttpServlet {
 		PrintWriter out = resp.getWriter();
 		int id = parseInt(req.getParameter("id"), -1);
 		if (id <= 0) { error(resp, out, 400, "Missing id"); return; }
+		int userId = AuthContext.getUserId(req);
 
 		String table = req.getServletPath().contains("resource-types") ? "S_ResourceType" : "S_Resource";
 		try {
-			DB.executeUpdateEx("UPDATE " + table + " SET IsActive='N', Updated=NOW() WHERE " + table + "_ID=?",
-				new Object[]{id}, null);
+			DB.executeUpdateEx("UPDATE " + table + " SET IsActive='N', Updated=NOW(), UpdatedBy=? WHERE " + table + "_ID=?",
+				new Object[]{userId, id}, null);
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
 			error(resp, out, 500, e.getMessage());

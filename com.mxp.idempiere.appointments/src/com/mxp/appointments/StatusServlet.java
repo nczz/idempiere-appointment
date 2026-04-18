@@ -41,10 +41,11 @@ public class StatusServlet extends HttpServlet {
 		}
 
 		try {
+			int userId = AuthContext.getUserId(req);
 			int updated = DB.executeUpdateEx(
-				"UPDATE AD_Ref_List SET Name=?, Description=?, Updated=NOW() "
+				"UPDATE AD_Ref_List SET Name=?, Description=?, Updated=NOW(), UpdatedBy=? "
 				+ "WHERE AD_Reference_ID=? AND Value=? AND AD_Client_ID=0",
-				new Object[]{name, color, REF_ID, value}, null);
+				new Object[]{name, color, userId, REF_ID, value}, null);
 			if (updated == 0) {
 				resp.setStatus(400);
 				out.print("{\"error\":\"Unknown status: " + value + "\"}");

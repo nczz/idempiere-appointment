@@ -53,6 +53,7 @@ public class UpdateServlet extends HttpServlet {
 			// Set Env context from the record itself
 			Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, ra.getAD_Client_ID());
 			Env.setContext(Env.getCtx(), Env.AD_ORG_ID, ra.getAD_Org_ID());
+			Env.setContext(Env.getCtx(), "#AD_User_ID", AuthContext.getUserId(req));
 
 			if (name != null) ra.setName(name);
 

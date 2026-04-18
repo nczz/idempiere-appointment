@@ -35,6 +35,7 @@ public class GroupRemoveServlet extends HttpServlet {
 
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, ra.getAD_Client_ID());
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, ra.getAD_Org_ID());
+		Env.setContext(Env.getCtx(), "#AD_User_ID", AuthContext.getUserId(req));
 
 		// Check: if this is the only assignment (no group or last in group), block removal
 		String desc = ra.getDescription();

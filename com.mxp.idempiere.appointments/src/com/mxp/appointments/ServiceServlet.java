@@ -77,9 +77,10 @@ public class ServiceServlet extends HttpServlet {
 
 		String sql = "INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, "
 				+ "Created, CreatedBy, Updated, UpdatedBy, AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU) "
-				+ "VALUES (nextval('ad_ref_list_sq'), 0, 0, 'Y', NOW(), 100, NOW(), 100, ?, ?, ?, ?, 'U', ?)";
+				+ "VALUES (nextval('ad_ref_list_sq'), 0, 0, 'Y', NOW(), ?, NOW(), ?, ?, ?, ?, ?, 'U', ?)";
+		int userId = AuthContext.getUserId(req);
 		try {
-			DB.executeUpdateEx(sql, new Object[]{refId, value, name, String.valueOf(minutes), uuid}, null);
+			DB.executeUpdateEx(sql, new Object[]{userId, userId, refId, value, name, String.valueOf(minutes), uuid}, null);
 			resp.setStatus(201);
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
@@ -96,10 +97,11 @@ public class ServiceServlet extends HttpServlet {
 		String name = parseStr(json, "name");
 		int minutes = parseInt(parseStr(json, "minutes"), 30);
 		if (id <= 0 || name == null) { error(resp, out, 400, "Missing id or name"); return; }
+		int userId = AuthContext.getUserId(req);
 
 		try {
-			DB.executeUpdateEx("UPDATE AD_Ref_List SET Name=?, Description=?, Updated=NOW() WHERE AD_Ref_List_ID=?",
-				new Object[]{name, String.valueOf(minutes), id}, null);
+			DB.executeUpdateEx("UPDATE AD_Ref_List SET Name=?, Description=?, Updated=NOW(), UpdatedBy=? WHERE AD_Ref_List_ID=?",
+				new Object[]{name, String.valueOf(minutes), userId, id}, null);
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
 			error(resp, out, 500, e.getMessage());
@@ -112,11 +114,12 @@ public class ServiceServlet extends HttpServlet {
 		PrintWriter out = resp.getWriter();
 		int id = parseInt(req.getParameter("id"), -1);
 		if (id <= 0) { error(resp, out, 400, "Missing id"); return; }
+		int userId = AuthContext.getUserId(req);
 
 		try {
 			// Soft delete: set IsActive='N' instead of deleting
-			DB.executeUpdateEx("UPDATE AD_Ref_List SET IsActive='N', Updated=NOW() WHERE AD_Ref_List_ID=?",
-				new Object[]{id}, null);
+			DB.executeUpdateEx("UPDATE AD_Ref_List SET IsActive='N', Updated=NOW(), UpdatedBy=? WHERE AD_Ref_List_ID=?",
+				new Object[]{userId, id}, null);
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
 			error(resp, out, 500, e.getMessage());

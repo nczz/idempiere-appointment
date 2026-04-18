@@ -73,6 +73,7 @@ public class BookServlet extends HttpServlet {
 		// Set up minimal Env context for MResourceAssignment
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, orgId);
+		Env.setContext(Env.getCtx(), "#AD_User_ID", AuthContext.getUserId(req));
 
 		String startISO = date + " " + startTime + ":00";
 		String endISO = date + " " + endTime + ":00";

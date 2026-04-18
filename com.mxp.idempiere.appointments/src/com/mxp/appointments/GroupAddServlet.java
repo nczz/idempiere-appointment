@@ -51,6 +51,7 @@ public class GroupAddServlet extends HttpServlet {
 
 			Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, source.getAD_Client_ID());
 			Env.setContext(Env.getCtx(), Env.AD_ORG_ID, source.getAD_Org_ID());
+			Env.setContext(Env.getCtx(), "#AD_User_ID", AuthContext.getUserId(req));
 
 			// Conflict check
 			String startStr = source.getAssignDateFrom().toString();
