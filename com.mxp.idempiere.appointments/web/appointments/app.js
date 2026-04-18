@@ -285,8 +285,17 @@ function renderDlgResources(assignment) {
           await api.groupRemoveResource(raId);
           toast('資源已移除');
           await reloadCurrentView();
-          const updated = assignments.find(a => a.id === assignment.id);
-          if (updated) renderDlgResources(updated);
+          // Find remaining assignment in same group (the removed one is gone)
+          const gid = desc.group_id;
+          const remaining = gid
+            ? assignments.find(a => { const d = parseDesc(a); return d.group_id === gid; })
+            : assignments.find(a => a.id === assignment.id);
+          if (remaining) {
+            editingAssignment = remaining;
+            renderDlgResources(remaining);
+          } else {
+            closeDialog();
+          }
         } catch (err) {
           toast(err.message, 'error');
         }
@@ -347,6 +356,11 @@ async function saveDialog() {
       await api.updateAssignment(editingAssignment.id, {
         name, status, date, startTime, endTime, notes,
       });
+      // Ensure edited resource stays visible
+      const rid = getResourceId(editingAssignment);
+      selectedResources.add(rid);
+      const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
+      if (cb) cb.checked = true;
       toast('預約已更新');
     } catch (e) {
       toast('更新失敗：' + (e.message || e), 'error');
@@ -695,9 +709,9 @@ function addDays(isoStr, days) {
   return d.toISOString().replace(/\.\d{3}/, '');
 }
 
-function reloadCurrentView() {
+async function reloadCurrentView() {
   const view = calendar.view;
-  loadAssignments(view.activeStart.toISOString(), view.activeEnd.toISOString());
+  await loadAssignments(view.activeStart.toISOString(), view.activeEnd.toISOString());
 }
 
 function toast(msg, type = 'info') {
