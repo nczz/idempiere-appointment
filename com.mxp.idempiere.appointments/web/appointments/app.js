@@ -331,6 +331,12 @@ async function saveDialog() {
         resourceIds: checkedResources,
         bpartnerId: bpId ? parseInt(bpId) : 0,
       });
+      // Auto-select booked resources so events are visible
+      checkedResources.forEach(rid => {
+        selectedResources.add(rid);
+        const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
+        if (cb) cb.checked = true;
+      });
       toast('預約已建立');
     } catch (e) {
       toast('建立失敗：' + (e.message || e), 'error');
