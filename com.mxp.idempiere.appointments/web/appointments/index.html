@@ -4,86 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>預約管理</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
-  <link rel="stylesheet" href="style.css">
+  <script type="module" crossorigin src="./assets/index-dhNHXk6Z.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Dg6LzU6D.css">
 </head>
 <body>
-  <div class="app-container" id="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-section">
-        <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜尋預約...">
-        <div class="search-results" id="searchResults" style="display:none;"></div>
-      </div>
-      <div class="sidebar-section" id="resourcePanel"></div>
-      <div class="sidebar-section" id="statusLegend"></div>
-      <div class="sidebar-section">
-        <label class="toggle-switch">
-          <input type="checkbox" id="showCancelled">
-          <span class="toggle-slider"></span>
-          顯示已取消
-        </label>
-      </div>
-    </aside>
-    <main class="calendar-container" id="calendarContainer"></main>
-  </div>
-
-  <!-- Appointment Dialog -->
-  <div class="dialog-overlay" id="dialogOverlay" style="display:none;">
-    <div class="dialog" id="appointmentDialog">
-      <h3 id="dialogTitle">新增預約</h3>
-      <div class="dialog-field">
-        <label>姓名</label>
-        <input type="text" id="dlgName" placeholder="病患姓名">
-      </div>
-      <div class="dialog-field">
-        <label>病患搜尋</label>
-        <input type="text" id="dlgBpSearch" placeholder="搜尋已有病患...">
-        <div class="search-results" id="dlgBpResults" style="display:none;"></div>
-        <input type="hidden" id="dlgBpId">
-      </div>
-      <div class="dialog-field">
-        <label>資源</label>
-        <div id="dlgResources"></div>
-      </div>
-      <div class="dialog-field">
-        <label>服務項目</label>
-        <select id="dlgService"><option value="">-- 選擇 --</option></select>
-      </div>
-      <div class="dialog-field">
-        <label>日期</label>
-        <input type="date" id="dlgDate">
-      </div>
-      <div class="dialog-field">
-        <label>開始時間</label>
-        <input type="time" id="dlgStart" step="900">
-      </div>
-      <div class="dialog-field">
-        <label>結束時間</label>
-        <input type="time" id="dlgEnd" step="900">
-      </div>
-      <div class="dialog-field">
-        <label>狀態</label>
-        <select id="dlgStatus"></select>
-      </div>
-      <div class="dialog-field">
-        <label>備註</label>
-        <textarea id="dlgNotes" rows="2"></textarea>
-      </div>
-      <div id="dlgConflictWarning" style="display:none;color:#EF4444;font-size:0.85em;margin:8px 0;"></div>
-      <div id="dlgBpInfo" style="display:none;font-size:0.85em;margin:8px 0;padding:8px;background:#f9fafb;border-radius:4px;"></div>
-      <div class="dialog-actions">
-        <button class="btn" id="dlgCancel">取消</button>
-        <button class="btn btn-danger" id="dlgDelete" style="display:none;">刪除預約</button>
-        <button class="btn" id="dlgCopyNext" style="display:none;">複製到下週</button>
-        <button class="btn" id="dlgCreateBill" style="display:none;">建立帳單</button>
-        <button class="btn btn-primary" id="dlgSave">儲存</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toastContainer"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-  <script type="module" src="app.js"></script>
+  <div id="root"></div>
 </body>
 </html>
