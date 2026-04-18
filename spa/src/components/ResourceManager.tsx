@@ -109,6 +109,8 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
                 ) : (
                   <>
                     <strong style={{ flex: 1 }}>{type.Name}</strong>
+                    <a href="#" onClick={(e) => { e.preventDefault(); api.zoomRecord('S_ResourceType', type.id); }}
+                      style={{ textDecoration: 'none', fontSize: 11, marginRight: 2 }} title="開啟資源類型">🔗</a>
                     <button onClick={() => startEdit(type.id, type.Name, 'type')}
                       style={{ fontSize: 11, padding: '1px 6px' }}>編輯</button>
                     <button onClick={() => handleDeactivate(type.id, type.Name, 'type')}
@@ -132,6 +134,8 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
                     <>
                       <span style={{ width: 12, height: 12, borderRadius: '50%', background: res._color || '#999', flexShrink: 0 }} />
                       <span style={{ flex: 1, fontSize: 13 }}>{res.Name}</span>
+                      <a href="#" onClick={(e) => { e.preventDefault(); api.zoomRecord('S_Resource', res.id); }}
+                        style={{ textDecoration: 'none', fontSize: 11, marginRight: 2 }} title="開啟資源">🔗</a>
                       <button onClick={() => startEdit(res.id, res.Name, 'res', res._color)}
                         style={{ fontSize: 11, padding: '1px 6px' }}>編輯</button>
                       <button onClick={() => handleDeactivate(res.id, res.Name, 'res')}

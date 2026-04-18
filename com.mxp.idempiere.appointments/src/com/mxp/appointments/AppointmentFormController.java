@@ -8,8 +8,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
+import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.panel.ADForm;
 import org.adempiere.webui.panel.IFormController;
+import org.compiere.model.MQuery;
+import org.compiere.model.MTable;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.idempiere.ui.zk.annotation.Form;
@@ -77,10 +80,15 @@ public class AppointmentFormController implements IFormController {
 	}
 
 	private void setupTokenRefreshBridge() {
+		String iframeUuid = form.getIframe().getUuid();
 		String script =
 			"(function(){window.addEventListener('message',function(e){" +
-			"if(e.data&&e.data.type==='refresh-token'){" +
-			"zAu.send(new zk.Event(zk.Widget.$('#" + form.getIframe().getUuid() + "'),'onTokenRefresh',null));" +
+			"if(!e.data||!e.data.type)return;" +
+			"var w=zk.Widget.$('#" + iframeUuid + "');" +
+			"if(e.data.type==='refresh-token'){" +
+			"zAu.send(new zk.Event(w,'onTokenRefresh',null));" +
+			"}else if(e.data.type==='zoom'){" +
+			"zAu.send(new zk.Event(w,'onZoom',JSON.stringify(e.data)));" +
 			"}});})();";
 		Clients.evalJavaScript(script);
 
@@ -93,6 +101,27 @@ public class AppointmentFormController implements IFormController {
 						"var f=document.getElementById('%s');" +
 						"if(f&&f.contentWindow)f.contentWindow.postMessage({type:'token-refreshed',token:'%s'},'*');",
 						form.getIframe().getUuid(), newToken));
+				}
+			}
+		});
+
+		form.getIframe().addEventListener("onZoom", new EventListener<Event>() {
+			@Override
+			public void onEvent(Event event) {
+				try {
+					String data = (String) event.getData();
+					String tableName = extractJsonValue(data, "tableName");
+					int recordId = Integer.parseInt(extractJsonValue(data, "recordId"));
+					if (tableName != null && recordId > 0) {
+						MTable table = MTable.get(Env.getCtx(), tableName);
+						if (table != null) {
+							MQuery query = new MQuery(tableName);
+							query.addRestriction(tableName + "_ID", MQuery.EQUAL, recordId);
+							AEnv.zoom(table.getAD_Window_ID(), query);
+						}
+					}
+				} catch (Exception e) {
+					log.log(Level.WARNING, "Zoom failed", e);
 				}
 			}
 		});

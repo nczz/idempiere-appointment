@@ -143,3 +143,9 @@ export async function searchAssignments(keyword: string): Promise<Assignment[]> 
   );
   return data?.records || [];
 }
+
+// ── ZK integration ────────────────────────────────────────────────
+
+export function zoomRecord(tableName: string, recordId: number): void {
+  window.parent.postMessage({ type: 'zoom', tableName, recordId: String(recordId) }, '*');
+}
