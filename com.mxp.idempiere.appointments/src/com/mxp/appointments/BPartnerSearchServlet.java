@@ -36,7 +36,7 @@ public class BPartnerSearchServlet extends HttpServlet {
 					+ "u.Phone, u.EMail "
 					+ "FROM C_BPartner bp "
 					+ "LEFT JOIN AD_User u ON u.C_BPartner_ID = bp.C_BPartner_ID AND u.IsActive='Y' "
-					+ "WHERE bp.IsActive='Y' AND bp.IsCustomer='Y' "
+					+ "WHERE bp.IsActive='Y' "
 					+ "AND LOWER(bp.Name) LIKE ? "
 					+ "ORDER BY bp.Name LIMIT 10";
 
