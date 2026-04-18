@@ -56,6 +56,10 @@ public class BookServlet extends HttpServlet {
 		int clientId = DB.getSQLValue(null, "SELECT AD_Client_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
 		if (orgId < 0 || clientId <= 0) { error(resp, out, 400, "Invalid resource"); return; }
 
+		// Verify resource belongs to the same tenant
+		int tokenClientId = AuthContext.getClientId(req);
+		if (clientId != tokenClientId) { error(resp, out, 403, "Access denied"); return; }
+
 		// Set up minimal Env context for MResourceAssignment
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, clientId);
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, orgId);

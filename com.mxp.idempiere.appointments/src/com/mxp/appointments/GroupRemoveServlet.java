@@ -31,6 +31,7 @@ public class GroupRemoveServlet extends HttpServlet {
 
 		MResourceAssignment ra = new MResourceAssignment(Env.getCtx(), id, null);
 		if (ra.get_ID() == 0) { resp.setStatus(404); out.print("{\"error\":\"Not found\"}"); return; }
+		if (ra.getAD_Client_ID() != AuthContext.getClientId(req)) { resp.setStatus(403); out.print("{\"error\":\"Access denied\"}"); return; }
 
 		Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, ra.getAD_Client_ID());
 		Env.setContext(Env.getCtx(), Env.AD_ORG_ID, ra.getAD_Org_ID());

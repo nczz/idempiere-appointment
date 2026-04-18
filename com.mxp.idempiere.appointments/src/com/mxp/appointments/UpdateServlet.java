@@ -47,6 +47,7 @@ public class UpdateServlet extends HttpServlet {
 		try {
 			MResourceAssignment ra = new MResourceAssignment(Env.getCtx(), id, trxName);
 			if (ra.get_ID() == 0) { error(resp, out, 404, "Not found"); trx.close(); return; }
+			if (ra.getAD_Client_ID() != AuthContext.getClientId(req)) { error(resp, out, 403, "Access denied"); trx.close(); return; }
 
 			// Set Env context from the record itself
 			Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, ra.getAD_Client_ID());

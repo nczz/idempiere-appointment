@@ -24,15 +24,16 @@ public class InitServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = resp.getWriter();
+		int clientId = AuthContext.getClientId(req);
 
 		try {
 			StringBuilder json = new StringBuilder("{");
 
-			// 1. Resource Types
+			// 1. Resource Types (client's own + system level)
 			json.append("\"resourceTypes\":[");
 			String sql = "SELECT S_ResourceType_ID, Name, IsTimeSlot, TimeSlotStart, TimeSlotEnd, "
 					+ "IsSingleAssignment, OnMonday, OnTuesday, OnWednesday, OnThursday, OnFriday, OnSaturday, OnSunday "
-					+ "FROM S_ResourceType WHERE IsActive='Y' ORDER BY Name";
+					+ "FROM S_ResourceType WHERE IsActive='Y' AND AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
 			appendRows(json, sql, rs -> {
 				return "{\"id\":" + rs.getInt(1)
 						+ ",\"Name\":\"" + esc(rs.getString(2)) + "\""
@@ -54,7 +55,7 @@ public class InitServlet extends HttpServlet {
 			// 2. Resources (include color from Description)
 			json.append("\"resources\":[");
 			sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsAvailable, X_Color "
-					+ "FROM S_Resource WHERE IsActive='Y' ORDER BY Name";
+					+ "FROM S_Resource WHERE IsActive='Y' AND AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
 			appendRows(json, sql, rs -> {
 				String color = rs.getString(5);
 				return "{\"id\":" + rs.getInt(1)

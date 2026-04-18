@@ -47,6 +47,7 @@ public class GroupAddServlet extends HttpServlet {
 		try {
 			MResourceAssignment source = new MResourceAssignment(Env.getCtx(), assignmentId, trxName);
 			if (source.get_ID() == 0) { error(resp, out, 404, "Assignment not found"); trx.close(); return; }
+			if (source.getAD_Client_ID() != AuthContext.getClientId(req)) { error(resp, out, 403, "Access denied"); trx.close(); return; }
 
 			Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, source.getAD_Client_ID());
 			Env.setContext(Env.getCtx(), Env.AD_ORG_ID, source.getAD_Org_ID());

@@ -39,7 +39,10 @@ export function getOrgId(): number {
 // ── Custom API (no auth, same origin) ─────────────────────────────
 
 async function apptFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${APPT_BASE}/${path}`, opts);
+  const res = await fetch(`${APPT_BASE}/${path}`, {
+    ...opts,
+    headers: { Authorization: `Bearer ${token}`, ...opts?.headers },
+  });
   const json = await res.json();
   if (!res.ok) throw new Error((json as { error?: string }).error || res.statusText);
   return json as T;

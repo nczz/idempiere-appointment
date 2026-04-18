@@ -30,21 +30,24 @@ public class BPartnerSearchServlet extends HttpServlet {
 			return;
 		}
 
+		int clientId = AuthContext.getClientId(req);
+
 		try {
 			StringBuilder json = new StringBuilder("{\"results\":[");
 			String sql = "SELECT bp.C_BPartner_ID, bp.Name, "
 					+ "u.Phone, u.EMail "
 					+ "FROM C_BPartner bp "
 					+ "LEFT JOIN AD_User u ON u.C_BPartner_ID = bp.C_BPartner_ID AND u.IsActive='Y' "
-					+ "WHERE bp.IsActive='Y' "
+					+ "WHERE bp.IsActive='Y' AND bp.AD_Client_ID = ? "
 					+ "AND (LOWER(bp.Name) LIKE ? OR LOWER(bp.Value) LIKE ?) "
 					+ "ORDER BY bp.Name LIMIT 10";
 
 			boolean first = true;
 			try (PreparedStatement ps = DB.prepareStatement(sql, null)) {
+				ps.setInt(1, clientId);
 				String pattern = "%" + q.trim().toLowerCase() + "%";
-				ps.setString(1, pattern);
 				ps.setString(2, pattern);
+				ps.setString(3, pattern);
 				try (ResultSet rs = ps.executeQuery()) {
 					while (rs.next()) {
 						if (!first) json.append(",");

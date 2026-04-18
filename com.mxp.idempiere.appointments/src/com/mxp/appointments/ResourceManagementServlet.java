@@ -33,9 +33,9 @@ public class ResourceManagementServlet extends HttpServlet {
 
 		try {
 			if (path.contains("resource-types")) {
-				listResourceTypes(out);
+				listResourceTypes(out, req);
 			} else {
-				listResources(out);
+				listResources(out, req);
 			}
 		} catch (Exception e) {
 			resp.setStatus(500);
@@ -106,9 +106,10 @@ public class ResourceManagementServlet extends HttpServlet {
 
 	// ── List ──
 
-	private void listResourceTypes(PrintWriter out) throws Exception {
+	private void listResourceTypes(PrintWriter out, HttpServletRequest req) throws Exception {
+		int clientId = AuthContext.getClientId(req);
 		StringBuilder json = new StringBuilder("{\"types\":[");
-		String sql = "SELECT S_ResourceType_ID, Name, IsActive FROM S_ResourceType ORDER BY Name";
+		String sql = "SELECT S_ResourceType_ID, Name, IsActive FROM S_ResourceType WHERE AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
 		boolean first = true;
 		try (PreparedStatement ps = DB.prepareStatement(sql, null); ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
@@ -124,9 +125,10 @@ public class ResourceManagementServlet extends HttpServlet {
 		out.print(json);
 	}
 
-	private void listResources(PrintWriter out) throws Exception {
+	private void listResources(PrintWriter out, HttpServletRequest req) throws Exception {
+		int clientId = AuthContext.getClientId(req);
 		StringBuilder json = new StringBuilder("{\"resources\":[");
-		String sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsActive, X_Color FROM S_Resource ORDER BY Name";
+		String sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsActive, X_Color FROM S_Resource WHERE AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
 		boolean first = true;
 		try (PreparedStatement ps = DB.prepareStatement(sql, null); ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {

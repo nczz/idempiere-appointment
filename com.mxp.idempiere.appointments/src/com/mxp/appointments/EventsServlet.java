@@ -33,6 +33,9 @@ public class EventsServlet extends HttpServlet {
 			return;
 		}
 
+		int clientId = AuthContext.getClientId(req);
+		int orgId = AuthContext.getOrgId(req);
+
 		try {
 			StringBuilder json = new StringBuilder("{\"events\":[");
 			String sql = "SELECT S_ResourceAssignment_ID, S_Resource_ID, Name, Description, "
@@ -40,13 +43,15 @@ public class EventsServlet extends HttpServlet {
 					+ "X_AppointmentStatus, C_BPartner_ID "
 					+ "FROM S_ResourceAssignment "
 					+ "WHERE AssignDateFrom >= ?::date AND AssignDateFrom < ?::date "
-					+ "AND IsActive='Y' "
+					+ "AND IsActive='Y' AND AD_Client_ID = ? "
+					+ (orgId > 0 ? "AND AD_Org_ID IN (0, " + orgId + ") " : "")
 					+ "ORDER BY AssignDateFrom";
 
 			boolean first = true;
 			try (PreparedStatement ps = DB.prepareStatement(sql, null)) {
 				ps.setString(1, start);
 				ps.setString(2, end);
+				ps.setInt(3, clientId);
 				try (ResultSet rs = ps.executeQuery()) {
 					while (rs.next()) {
 						if (!first) json.append(",");
