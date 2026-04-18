@@ -35,17 +35,29 @@ public class SearchServlet extends HttpServlet {
 
 		try {
 			StringBuilder json = new StringBuilder("{\"records\":[");
-			String sql = "SELECT S_ResourceAssignment_ID, S_Resource_ID, Name, Description, "
-					+ "AssignDateFrom, AssignDateTo, IsConfirmed, Qty, IsActive, "
-					+ "X_AppointmentStatus, C_BPartner_ID "
-					+ "FROM S_ResourceAssignment "
-					+ "WHERE AD_Client_ID = ? AND UPPER(Name) LIKE UPPER(?) "
-					+ "ORDER BY AssignDateFrom DESC LIMIT 20";
+			String sql = "SELECT DISTINCT ra.S_ResourceAssignment_ID, ra.S_Resource_ID, ra.Name, ra.Description, "
+					+ "ra.AssignDateFrom, ra.AssignDateTo, ra.IsConfirmed, ra.Qty, ra.IsActive, "
+					+ "ra.X_AppointmentStatus, ra.C_BPartner_ID "
+					+ "FROM S_ResourceAssignment ra "
+					+ "LEFT JOIN C_BPartner bp ON bp.C_BPartner_ID = ra.C_BPartner_ID "
+					+ "LEFT JOIN AD_User u ON u.C_BPartner_ID = bp.C_BPartner_ID AND u.IsActive='Y' "
+					+ "WHERE ra.AD_Client_ID = ? AND ("
+					+ "UPPER(ra.Name) LIKE UPPER(?) "
+					+ "OR UPPER(bp.Name) LIKE UPPER(?) "
+					+ "OR UPPER(bp.Value) LIKE UPPER(?) "
+					+ "OR u.Phone LIKE ? "
+					+ "OR UPPER(u.EMail) LIKE UPPER(?)"
+					+ ") ORDER BY ra.AssignDateFrom DESC LIMIT 20";
 
 			boolean first = true;
+			String pattern = "%" + q.trim() + "%";
 			try (PreparedStatement ps = DB.prepareStatement(sql, null)) {
 				ps.setInt(1, clientId);
-				ps.setString(2, "%" + q.trim() + "%");
+				ps.setString(2, pattern);
+				ps.setString(3, pattern);
+				ps.setString(4, pattern);
+				ps.setString(5, pattern);
+				ps.setString(6, pattern);
 				try (ResultSet rs = ps.executeQuery()) {
 					while (rs.next()) {
 						if (!first) json.append(",");
