@@ -31,11 +31,10 @@ const TERMINAL_STATUSES = ['CXL', 'ABS'];
 async function init() {
   api.init();
   try {
-    [resourceTypes, resources, statusList] = await Promise.all([
-      api.getResourceTypes(),
-      api.getResources(),
-      api.getStatusList(),
-    ]);
+    const data = await api.getInit();
+    resourceTypes = data.resourceTypes || [];
+    resources = data.resources || [];
+    statusList = data.statusList || [];
     resources.forEach((r, i) => { r._color = RESOURCE_COLORS[i % RESOURCE_COLORS.length]; });
     resources.forEach(r => selectedResources.add(r.id));
     renderResourcePanel();
@@ -89,9 +88,7 @@ async function loadAssignments(start, end) {
   const rangeStart = start.slice(0, 10);
   const rangeEnd = end.slice(0, 10);
   try {
-    const promises = [...selectedResources].map(rid => api.getAssignments(rid, rangeStart, rangeEnd));
-    const results = await Promise.all(promises);
-    assignments = results.flat();
+    assignments = await api.getEvents(rangeStart, rangeEnd);
     renderEvents();
   } catch (e) {
     toast('查詢預約失敗', 'error');

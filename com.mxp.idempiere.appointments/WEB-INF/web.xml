@@ -9,4 +9,22 @@
         <servlet-name>TokenServlet</servlet-name>
         <url-pattern>/token</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InitServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.InitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InitServlet</servlet-name>
+        <url-pattern>/init</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EventsServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.EventsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EventsServlet</servlet-name>
+        <url-pattern>/events</url-pattern>
+    </servlet-mapping>
 </web-app>
