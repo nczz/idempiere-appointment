@@ -120,8 +120,7 @@ export function useAppState() {
 
   // ── Refresh after write operation ───────────────────────────────
 
-  const refreshAfterAction = useCallback(async (involvedResourceIds: number[] = []) => {
-    // Auto-select involved resources
+  const refreshAfterAction = useCallback(async (involvedResourceIds: number[] = [], updateDialogKey?: string) => {
     if (involvedResourceIds.length > 0) {
       setSelectedResources(prev => {
         const next = new Set(prev);
@@ -129,11 +128,18 @@ export function useAppState() {
         return next;
       });
     }
-    // Reload from server
     const { start, end } = dateRangeRef.current;
     if (start && end) {
       const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
       setAssignments(events);
+      // If dialog is open, update its appointment reference with fresh data
+      if (updateDialogKey) {
+        const freshAppts = groupAssignments(events);
+        const fresh = freshAppts.find(a => a.key === updateDialogKey);
+        if (fresh) {
+          setDialog(prev => prev ? { ...prev, appointment: fresh } : null);
+        }
+      }
     }
   }, []);
 
@@ -167,13 +173,13 @@ export function useAppState() {
 
   const addResource = useCallback(async (appt: Appointment, resourceId: number) => {
     await api.groupAdd(appt.primaryId, resourceId);
-    await refreshAfterAction([resourceId, ...appt.resources.map(r => r.resourceId)]);
+    await refreshAfterAction([resourceId, ...appt.resources.map(r => r.resourceId)], appt.key);
   }, [refreshAfterAction]);
 
   const removeResource = useCallback(async (assignmentId: number, appt: Appointment) => {
     await api.groupRemove(assignmentId);
     const rids = appt.resources.map(r => r.resourceId);
-    await refreshAfterAction(rids);
+    await refreshAfterAction(rids, appt.key);
   }, [refreshAfterAction]);
 
   // ── Resource selection helpers ──────────────────────────────────
