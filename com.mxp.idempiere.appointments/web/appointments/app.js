@@ -246,14 +246,23 @@ function renderDlgResources(assignment) {
     ? assignments.filter(a => parseDesc(a).group_id === desc.group_id).map(a => getResourceId(a))
     : assignment ? [getResourceId(assignment)] : [];
 
-  container.innerHTML = resources.map(r => {
-    const checked = assignment ? groupedIds.includes(r.id) : selectedResources.has(r.id);
-    const type = assignment ? 'checkbox disabled' : 'checkbox';
-    return `<label class="resource-item" style="display:block;margin:2px 0;">
-      <input type="${type}" value="${r.id}" ${checked && !assignment ? 'checked' : ''} ${assignment && checked ? 'checked disabled' : ''} class="dlg-resource-cb">
-      <span class="color-dot" style="background:${r._color}"></span> ${r.Name}
-    </label>`;
-  }).join('');
+  if (assignment) {
+    // Edit mode: show only linked resources as read-only tags
+    const linked = resources.filter(r => groupedIds.includes(r.id));
+    container.innerHTML = linked.map(r =>
+      `<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:12px;font-size:12px;background:${r._color};color:#fff;">
+        ${r.Name}
+      </span>`
+    ).join('');
+  } else {
+    // Create mode: checkboxes for resource selection
+    container.innerHTML = resources.map(r =>
+      `<label class="resource-item" style="display:block;margin:2px 0;">
+        <input type="checkbox" value="${r.id}" class="dlg-resource-cb">
+        <span class="color-dot" style="background:${r._color}"></span> ${r.Name}
+      </label>`
+    ).join('');
+  }
 }
 
 async function saveDialog() {
