@@ -169,25 +169,119 @@ ZK Session（已登入使用者）
 
 ## 開發
 
-### 執行測試
+### 前置需求
 
-```bash
-npm install
-npx playwright test
+- Node.js 18+（SPA 建置）
+- JDK 17+（Java 編譯）
+- Maven 3.9+（Tycho 建置）
+- iDempiere 12 原始碼已建置（提供 p2 repository）
+
+### 專案結構
+
+```
+idempiere-appointment/
+├── spa/                          ← React SPA 原始碼
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── src/
+│       ├── App.tsx
+│       ├── api.ts
+│       ├── types.ts
+│       ├── components/
+│       └── hooks/
+├── com.mxp.idempiere.appointments/   ← OSGi bundle（Java + 靜態檔）
+│   ├── META-INF/MANIFEST.MF
+│   ├── WEB-INF/web.xml
+│   ├── src/com/mxp/appointments/     ← Java servlets
+│   ├── web/appointments/             ← Vite build 產出（不要手動編輯）
+│   └── migration/                    ← SQL migration
+├── com.mxp.idempiere.appointments.parent/  ← Maven parent
+├── com.mxp.idempiere.appointments.p2/      ← p2 repository 產出
+└── tests/                            ← Playwright E2E 測試
 ```
 
-### 修改 SPA
+### 開發流程
 
-SPA 原始碼在 `spa/` 目錄（React + TypeScript + Vite）：
+#### 1. 修改 SPA（React）
 
 ```bash
 cd spa
-npm install
-npm run dev          # 開發模式（需要 iDempiere 後端）
-npm run build        # 建置到 ../com.mxp.idempiere.appointments/web/appointments/
+npm install              # 首次或 package.json 變更後
+npm run dev              # 開發模式（http://localhost:5173，需要 iDempiere 後端）
+npm run build            # 建置到 ../com.mxp.idempiere.appointments/web/appointments/
 ```
 
-建置後重新 `mvn verify` 並部署。
+`npm run build` 會清空 `web/appointments/` 並產出新的 `index.html` + `assets/`。
+
+#### 2. 修改 Java（Servlet）
+
+Java 原始碼在 `com.mxp.idempiere.appointments/src/`。修改後需要重新建置 OSGi bundle。
+
+#### 3. 建置 OSGi Bundle
+
+```bash
+# 先建置 SPA（如果有修改）
+cd spa && npm run build && cd ..
+
+# 建置 Java + 打包 OSGi bundle + 產出 p2 repository
+mvn verify -Didempiere.core.repository.url=file:///path/to/iDempiere/org.idempiere.p2/target/repository
+```
+
+產出：
+- `com.mxp.idempiere.appointments/target/*.jar` — OSGi bundle
+- `com.mxp.idempiere.appointments.p2/target/repository/` — p2 update site
+
+#### 4. 部署到 iDempiere
+
+**正式部署（使用 p2 update site）：**
+```bash
+cd /path/to/idempiere-server
+./update-rest-extensions.sh /path/to/com.mxp.idempiere.appointments.p2/target/repository/
+systemctl restart idempiere
+```
+
+**開發快速部署（直接複製檔案）：**
+```bash
+# 在 iDempiere 伺服器上
+cd /path/to/idempiere-appointment
+git pull
+
+# 只更新 SPA 靜態檔（不需重啟）
+cp -r com.mxp.idempiere.appointments/web/appointments/* \
+  /path/to/idempiere/plugins/com.mxp.idempiere.appointments_*/web/appointments/
+
+# 更新 Java class（需要重啟）
+mvn verify -q
+cp com.mxp.idempiere.appointments/target/classes/com/mxp/appointments/*.class \
+  /path/to/idempiere/plugins/com.mxp.idempiere.appointments_*/com/mxp/appointments/
+systemctl restart idempiere
+```
+
+> **注意**：SPA 靜態檔更新不需要重啟 iDempiere（NoCacheFilter 確保瀏覽器不快取）。Java class 更新需要重啟。
+
+### 執行測試
+
+```bash
+# E2E 測試（需要 iDempiere 後端運行中）
+IDEMPIERE_URL=https://your-server.com \
+IDEMPIERE_USER=admin \
+IDEMPIERE_PASS=admin \
+npx playwright test
+```
+
+### Reverse Proxy 設定
+
+如果 iDempiere 前面有 nginx，需要轉發 `/appointment/` 路徑：
+
+```nginx
+location /appointment/ {
+    proxy_pass http://idempiere-backend:8080/appointment/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
 
 ## 授權
 
