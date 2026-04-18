@@ -48,6 +48,7 @@ public class UpdateServlet extends HttpServlet {
 			MResourceAssignment ra = new MResourceAssignment(Env.getCtx(), id, trxName);
 			if (ra.get_ID() == 0) { error(resp, out, 404, "Not found"); trx.close(); return; }
 			if (ra.getAD_Client_ID() != AuthContext.getClientId(req)) { error(resp, out, 403, "Access denied"); trx.close(); return; }
+			int userId = AuthContext.getUserId(req);
 
 			// Set Env context from the record itself
 			Env.setContext(Env.getCtx(), Env.AD_CLIENT_ID, ra.getAD_Client_ID());
@@ -83,7 +84,7 @@ public class UpdateServlet extends HttpServlet {
 
 			// Write status log if status changed
 			if (status != null && !status.equals(oldStatus)) {
-				writeStatusLog(ra.get_ID(), oldStatus, status, ra.getAD_Client_ID(), ra.getAD_Org_ID(), trxName);
+				writeStatusLog(ra.get_ID(), oldStatus, status, ra.getAD_Client_ID(), ra.getAD_Org_ID(), userId, trxName);
 			}
 
 			// Sync grouped assignments (same time/status)
@@ -110,7 +111,7 @@ public class UpdateServlet extends HttpServlet {
 							if (status != null) {
 								String gaOld = null;
 								try { gaOld = extractJsonField(ga.getDescription(), "status"); } catch (Exception e) {}
-								writeStatusLog(ga.get_ID(), gaOld, status, ga.getAD_Client_ID(), ga.getAD_Org_ID(), trxName);
+								writeStatusLog(ga.get_ID(), gaOld, status, ga.getAD_Client_ID(), ga.getAD_Org_ID(), userId, trxName);
 							}
 						}
 					}
@@ -170,10 +171,10 @@ public class UpdateServlet extends HttpServlet {
 		try { return Integer.parseInt(s.trim()); } catch (Exception e) { return -1; }
 	}
 
-	private void writeStatusLog(int assignmentId, String oldStatus, String newStatus, int clientId, int orgId, String trxName) {
+	private void writeStatusLog(int assignmentId, String oldStatus, String newStatus, int clientId, int orgId, int userId, String trxName) {
 		DB.executeUpdateEx(
 			"INSERT INTO X_AppointmentStatusLog (S_ResourceAssignment_ID, OldStatus, NewStatus, AD_Client_ID, AD_Org_ID, CreatedBy) "
-			+ "VALUES (?, ?, ?, ?, ?, 100)",
-			new Object[]{assignmentId, oldStatus, newStatus, clientId, orgId}, trxName);
+			+ "VALUES (?, ?, ?, ?, ?, ?)",
+			new Object[]{assignmentId, oldStatus, newStatus, clientId, orgId, userId}, trxName);
 	}
 }

@@ -72,6 +72,7 @@ public class AuthFilter implements Filter {
 			// Set attributes for downstream servlets
 			req.setAttribute("AD_Client_ID", clientId);
 			req.setAttribute("AD_Org_ID", orgId);
+			req.setAttribute("AD_User_ID", extractInt(payload, "AD_User_ID"));
 
 			chain.doFilter(req, res);
 		} catch (Exception e) {

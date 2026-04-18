@@ -12,4 +12,8 @@ public class AuthContext {
 		Object v = req.getAttribute("AD_Org_ID");
 		return v instanceof Integer ? (Integer) v : 0;
 	}
+	public static int getUserId(HttpServletRequest req) {
+		Object v = req.getAttribute("AD_User_ID");
+		return v instanceof Integer ? (Integer) v : 100;
+	}
 }
