@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.panel.ADForm;
 import org.adempiere.webui.panel.IFormController;
-import org.compiere.model.MQuery;
 import org.compiere.model.MTable;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
@@ -113,11 +112,9 @@ public class AppointmentFormController implements IFormController {
 					String tableName = extractJsonValue(data, "tableName");
 					int recordId = Integer.parseInt(extractJsonValue(data, "recordId"));
 					if (tableName != null && recordId > 0) {
-						MTable table = MTable.get(Env.getCtx(), tableName);
-						if (table != null) {
-							MQuery query = new MQuery(tableName);
-							query.addRestriction(tableName + "_ID", MQuery.EQUAL, recordId);
-							AEnv.zoom(table.getAD_Window_ID(), query);
+						int tableId = MTable.getTable_ID(tableName);
+						if (tableId > 0) {
+							AEnv.zoom(tableId, recordId);
 						}
 					}
 				} catch (Exception e) {
