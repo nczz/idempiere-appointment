@@ -76,12 +76,13 @@ public class ServiceServlet extends HttpServlet {
 		String value = stripped.isEmpty() ? "SVC" + System.currentTimeMillis() % 100000 : stripped.substring(0, Math.min(10, stripped.length()));
 		String uuid = "mxp-appt-svc-" + System.currentTimeMillis();
 
+		int newId = DB.getNextID(0, "AD_Ref_List", null);
 		String sql = "INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, "
 				+ "Created, CreatedBy, Updated, UpdatedBy, AD_Reference_ID, Value, Name, Description, EntityType, AD_Ref_List_UU) "
-				+ "VALUES (nextval('ad_ref_list_sq'), 0, 0, 'Y', NOW(), ?, NOW(), ?, ?, ?, ?, ?, 'U', ?)";
+				+ "VALUES (?, 0, 0, 'Y', NOW(), ?, NOW(), ?, ?, ?, ?, ?, 'U', ?)";
 		int userId = AuthContext.getUserId(req);
 		try {
-			DB.executeUpdateEx(sql, new Object[]{userId, userId, refId, value, name, String.valueOf(minutes), uuid}, null);
+			DB.executeUpdateEx(sql, new Object[]{newId, userId, userId, refId, value, name, String.valueOf(minutes), uuid}, null);
 			resp.setStatus(201);
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
@@ -162,7 +163,7 @@ public class ServiceServlet extends HttpServlet {
 
 	private String esc(String s) {
 		if (s == null) return "";
-		return s.replace("\\", "\\\\").replace("\"", "\\\"");
+		return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
 	}
 
 	private int parseInt(String s, int def) {
