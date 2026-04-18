@@ -156,8 +156,20 @@ export function useAppState() {
 
   const bookAppointment = useCallback(async (data: BookRequest) => {
     await api.bookAppointment(data);
-    await refreshAfterAction(data.resourceIds);
-  }, [refreshAfterAction]);
+    // Force reload: add resources to selected, then reload events
+    const rids = data.resourceIds;
+    setSelectedResources(prev => {
+      const next = new Set(prev);
+      rids.forEach(id => next.add(id));
+      return next;
+    });
+    const { start, end } = dateRangeRef.current;
+    if (start && end) {
+      const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
+      console.log('[book] reloaded events:', events.length, 'dateRange:', dateRangeRef.current);
+      setAssignments(events);
+    }
+  }, []);
 
   const updateAppointment = useCallback(async (appt: Appointment, data: UpdateRequest) => {
     await api.updateAppointment(appt.primaryId, data);
