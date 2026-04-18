@@ -723,12 +723,16 @@ async function reloadCurrentView() {
  * @param {number[]} resourceIds - resources that should be visible after this action
  */
 async function refreshAfterAction(resourceIds = []) {
+  console.log('[refresh] involvedRids:', resourceIds, 'selectedBefore:', [...selectedResources]);
   resourceIds.forEach(rid => {
     selectedResources.add(rid);
     const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
     if (cb) cb.checked = true;
+    else console.warn('[refresh] checkbox not found for rid:', rid);
   });
+  console.log('[refresh] selectedAfter:', [...selectedResources]);
   await reloadCurrentView();
+  console.log('[refresh] assignments loaded:', assignments.length, 'visible:', assignments.filter(a => selectedResources.has(getResourceId(a))).length);
 }
 
 function toast(msg, type = 'info') {
