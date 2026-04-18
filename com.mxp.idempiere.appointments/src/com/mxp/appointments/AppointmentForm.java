@@ -42,7 +42,10 @@ public class AppointmentForm extends CustomForm {
 	 * @param token REST API JWT token
 	 */
 	public void loadSpa(String token) {
-		String src = "/appointment/web/appointments/index.html#token=" + token;
+		String base = Executions.getCurrent().getScheme() + "://"
+				+ Executions.getCurrent().getServerName() + ":"
+				+ Executions.getCurrent().getServerPort();
+		String src = base + "/appointment/web/appointments/index.html#token=" + token;
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
