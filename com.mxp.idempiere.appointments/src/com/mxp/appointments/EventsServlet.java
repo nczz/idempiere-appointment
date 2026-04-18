@@ -34,7 +34,6 @@ public class EventsServlet extends HttpServlet {
 		}
 
 		int clientId = AuthContext.getClientId(req);
-		int orgId = AuthContext.getOrgId(req);
 
 		try {
 			StringBuilder json = new StringBuilder("{\"events\":[");
@@ -44,7 +43,6 @@ public class EventsServlet extends HttpServlet {
 					+ "FROM S_ResourceAssignment "
 					+ "WHERE AssignDateFrom >= ?::date AND AssignDateFrom < ?::date "
 					+ "AND IsActive='Y' AND AD_Client_ID = ? "
-					+ (orgId > 0 ? "AND AD_Org_ID IN (0, " + orgId + ") " : "")
 					+ "ORDER BY AssignDateFrom";
 
 			boolean first = true;

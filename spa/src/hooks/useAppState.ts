@@ -156,26 +156,8 @@ export function useAppState() {
 
   const bookAppointment = useCallback(async (data: BookRequest) => {
     await api.bookAppointment(data);
-    // Force reload: add resources to selected, then reload events
-    const rids = data.resourceIds;
-    setSelectedResources(prev => {
-      const next = new Set(prev);
-      rids.forEach(id => next.add(id));
-      return next;
-    });
-    const { start, end } = dateRangeRef.current;
-    if (start && end) {
-      try {
-        const events = await api.getEvents(start.slice(0, 10), end.slice(0, 10));
-        console.log('[book] reloaded events:', events.length, 'start:', start.slice(0,10), 'end:', end.slice(0,10), 'org:', api.getOrgId());
-        setAssignments(events);
-      } catch (e) {
-        console.error('[book] reload failed:', e);
-      }
-    } else {
-      console.warn('[book] no dateRange stored');
-    }
-  }, []);
+    await refreshAfterAction(data.resourceIds);
+  }, [refreshAfterAction]);
 
   const updateAppointment = useCallback(async (appt: Appointment, data: UpdateRequest) => {
     await api.updateAppointment(appt.primaryId, data);
