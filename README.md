@@ -137,13 +137,13 @@ ZK Session（已登入使用者）
         ├── 從 Env.getCtx() 取得 AD_Session_ID
         ├── POST /appointment/token → JWT token（純 Java HMAC-SHA512 簽發）
         └── <iframe src="appointments/index.html#token=...">
-              └── SPA（FullCalendar）
-                    └── 用 JWT token 呼叫 iDempiere REST API
-                          ├── S_ResourceType     資源類型
-                          ├── S_Resource          資源清單
-                          ├── S_ResourceAssignment 預約 CRUD
-                          ├── AD_Ref_List         狀態 + 顏色
-                          └── C_BPartner          病患搜尋
+              └── SPA（React + TypeScript + FullCalendar）
+                    ├── GET /appointment/init      初始資料
+                    ├── GET /appointment/events     預約查詢
+                    ├── POST /appointment/book      建立預約
+                    ├── PUT /appointment/update     更新預約
+                    ├── POST /appointment/group-add 加入資源
+                    └── GET /appointment/bpartners  搜尋病患
 ```
 
 ### Token 機制
@@ -178,7 +178,16 @@ npx playwright test
 
 ### 修改 SPA
 
-SPA 檔案在 `com.mxp.idempiere.appointments/web/appointments/`，修改後重新 `mvn verify` 並部署。
+SPA 原始碼在 `spa/` 目錄（React + TypeScript + Vite）：
+
+```bash
+cd spa
+npm install
+npm run dev          # 開發模式（需要 iDempiere 後端）
+npm run build        # 建置到 ../com.mxp.idempiere.appointments/web/appointments/
+```
+
+建置後重新 `mvn verify` 並部署。
 
 ## 授權
 
