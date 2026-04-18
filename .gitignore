@@ -3,3 +3,5 @@ test-results/
 .DS_Store
 *.class
 bin/
+spa/node_modules/
+spa/dist/
