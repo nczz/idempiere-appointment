@@ -271,9 +271,16 @@ function renderDlgResources(assignment) {
         if (!rid) return;
         try {
           await api.groupAddResource(assignment.id, rid);
+          // Auto-select the new resource so it's visible
+          selectedResources.add(rid);
+          const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
+          if (cb) cb.checked = true;
           toast('資源已加入');
-          closeDialog();
-          reloadCurrentView();
+          // Refresh events and re-render dialog (don't close)
+          await reloadCurrentView();
+          // Re-fetch assignment data and re-render resources in dialog
+          const updated = assignments.find(a => a.id === assignment.id);
+          if (updated) renderDlgResources(updated);
         } catch (e) {
           toast(e.message, 'error');
           addSel.value = '';
