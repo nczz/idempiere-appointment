@@ -114,7 +114,9 @@ public class ServiceServlet extends HttpServlet {
 		if (id <= 0) { error(resp, out, 400, "Missing id"); return; }
 
 		try {
-			DB.executeUpdateEx("DELETE FROM AD_Ref_List WHERE AD_Ref_List_ID=?", new Object[]{id}, null);
+			// Soft delete: set IsActive='N' instead of deleting
+			DB.executeUpdateEx("UPDATE AD_Ref_List SET IsActive='N', Updated=NOW() WHERE AD_Ref_List_ID=?",
+				new Object[]{id}, null);
 			out.print("{\"ok\":true}");
 		} catch (Exception e) {
 			error(resp, out, 500, e.getMessage());

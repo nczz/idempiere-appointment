@@ -53,7 +53,7 @@ export default function ServiceManager({ onClose, onUpdated }: Props) {
   }
 
   async function handleDelete(id: number, name: string) {
-    if (!confirm(`確定刪除「${name}」？`)) return;
+    if (!confirm(`確定停用「${name}」？已建立的預約不受影響。`)) return;
     setLoading(true);
     try {
       await api.deleteService(id);
@@ -110,7 +110,7 @@ export default function ServiceManager({ onClose, onUpdated }: Props) {
                     <td style={{ padding: '4px', textAlign: 'center' }}>
                       <button onClick={() => startEdit(svc)} style={{ fontSize: 12, padding: '2px 8px', marginRight: 4 }}>編輯</button>
                       <button onClick={() => handleDelete(svc.id, svc.Name)}
-                        style={{ fontSize: 12, padding: '2px 8px', color: '#d32f2f' }}>刪除</button>
+                        style={{ fontSize: 12, padding: '2px 8px', color: '#d32f2f' }}>停用</button>
                     </td>
                   </>
                 )}
