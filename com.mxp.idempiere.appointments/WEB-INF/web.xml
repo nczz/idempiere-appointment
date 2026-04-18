@@ -73,4 +73,13 @@
         <servlet-name>GroupAddServlet</servlet-name>
         <url-pattern>/group-add</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GroupRemoveServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.GroupRemoveServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GroupRemoveServlet</servlet-name>
+        <url-pattern>/group-remove</url-pattern>
+    </servlet-mapping>
 </web-app>

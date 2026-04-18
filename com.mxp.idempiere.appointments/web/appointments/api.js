@@ -103,6 +103,14 @@ async function groupAddResource(assignmentId, resourceId) {
   return json;
 }
 
+/** Remove a resource from an appointment group */
+async function groupRemoveResource(assignmentId) {
+  const res = await fetch(`${APPT_BASE}/group-remove?id=${assignmentId}`, { method: 'DELETE' });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || res.statusText);
+  return json;
+}
+
 function createAssignment(data) { return post('models/S_ResourceAssignment', data); }
 function updateAssignment(id, data) {
   return fetch(`${APPT_BASE}/update?id=${id}`, {
@@ -139,7 +147,7 @@ function completeOrder(orderId) {
 export default {
   init, getOrgId, getClientId,
   getInit, getEvents,
-  bookAppointment, groupAddResource,
+  bookAppointment, groupAddResource, groupRemoveResource,
   createAssignment, updateAssignment, deleteAssignment,
   searchAssignments, searchBPartners, getBPartner,
   createOrder, createOrderLine, completeOrder,

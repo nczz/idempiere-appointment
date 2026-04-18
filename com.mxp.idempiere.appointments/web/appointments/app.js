@@ -247,23 +247,53 @@ function renderDlgResources(assignment) {
     : assignment ? [getResourceId(assignment)] : [];
 
   if (assignment) {
-    // Edit mode: show only linked resources as read-only tags + add button
+    // Edit mode: tag editor for resources
     const linked = resources.filter(r => groupedIds.includes(r.id));
     const unlinked = resources.filter(r => !groupedIds.includes(r.id));
-    let html = linked.map(r =>
-      `<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:12px;font-size:12px;background:${r._color};color:#fff;">
+
+    // Find assignment IDs for each linked resource (needed for remove)
+    const groupAssignments = desc.group_id
+      ? assignments.filter(a => parseDesc(a).group_id === desc.group_id)
+      : [assignment];
+
+    let html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">';
+    linked.forEach(r => {
+      const ra = groupAssignments.find(a => getResourceId(a) === r.id);
+      const raId = ra ? ra.id : 0;
+      html += `<span class="resource-tag" style="display:inline-flex;align-items:center;gap:2px;padding:2px 8px;border-radius:12px;font-size:12px;background:${r._color};color:#fff;">
         ${r.Name}
-      </span>`
-    ).join('');
+        <span class="tag-remove" data-raid="${raId}" style="cursor:pointer;margin-left:2px;font-size:14px;opacity:0.7;">✕</span>
+      </span>`;
+    });
+    html += '</div>';
+
     if (unlinked.length > 0) {
-      html += `<div style="margin-top:6px;">
-        <select id="dlgAddResource" style="font-size:12px;padding:2px 4px;">
-          <option value="">＋ 加入資源...</option>
-          ${unlinked.map(r => `<option value="${r.id}">${r.Name}</option>`).join('')}
-        </select>
-      </div>`;
+      html += `<select id="dlgAddResource" style="font-size:12px;padding:2px 4px;">
+        <option value="">＋ 加入資源...</option>
+        ${unlinked.map(r => `<option value="${r.id}">${r.Name}</option>`).join('')}
+      </select>`;
     }
     container.innerHTML = html;
+
+    // Remove handler
+    container.querySelectorAll('.tag-remove').forEach(el => {
+      el.onclick = async (e) => {
+        e.stopPropagation();
+        const raId = parseInt(el.dataset.raid);
+        if (!raId) return;
+        try {
+          await api.groupRemoveResource(raId);
+          toast('資源已移除');
+          await reloadCurrentView();
+          const updated = assignments.find(a => a.id === assignment.id);
+          if (updated) renderDlgResources(updated);
+        } catch (err) {
+          toast(err.message, 'error');
+        }
+      };
+    });
+
+    // Add handler
     const addSel = document.getElementById('dlgAddResource');
     if (addSel) {
       addSel.onchange = async () => {
@@ -271,18 +301,15 @@ function renderDlgResources(assignment) {
         if (!rid) return;
         try {
           await api.groupAddResource(assignment.id, rid);
-          // Auto-select the new resource so it's visible
           selectedResources.add(rid);
           const cb = document.querySelector(`.resource-cb[value="${rid}"]`);
           if (cb) cb.checked = true;
           toast('資源已加入');
-          // Refresh events and re-render dialog (don't close)
           await reloadCurrentView();
-          // Re-fetch assignment data and re-render resources in dialog
           const updated = assignments.find(a => a.id === assignment.id);
           if (updated) renderDlgResources(updated);
-        } catch (e) {
-          toast(e.message, 'error');
+        } catch (err) {
+          toast(err.message, 'error');
           addSel.value = '';
         }
       };
