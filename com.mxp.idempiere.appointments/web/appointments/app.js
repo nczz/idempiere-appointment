@@ -36,7 +36,7 @@ async function init() {
     resources = data.resources || [];
     statusList = data.statusList || [];
     resources.forEach((r, i) => { r._color = RESOURCE_COLORS[i % RESOURCE_COLORS.length]; });
-    resources.forEach(r => selectedResources.add(r.id));
+    // resources default: none selected
     renderResourcePanel();
     renderStatusLegend();
     renderServiceOptions();
@@ -536,7 +536,7 @@ function renderResourcePanel() {
     html += `<div style="margin-bottom:8px;"><strong>${typeName}</strong></div>`;
     items.forEach(r => {
       html += `<label class="resource-item">
-        <input type="checkbox" value="${r.id}" checked class="resource-cb">
+        <input type="checkbox" value="${r.id}" class="resource-cb">
         <span class="color-dot" style="background:${r._color}"></span> ${r.Name}
       </label>`;
     });
