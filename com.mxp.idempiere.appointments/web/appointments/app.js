@@ -325,26 +325,13 @@ async function saveDialog() {
     }
     conflictWarn.style.display = 'none';
 
-    const groupId = checkedResources.length > 1 ? crypto.randomUUID() : undefined;
-    const desc = { service, notes };
-    if (groupId) desc.group_id = groupId;
-
     try {
-      for (const rid of checkedResources) {
-        const assignDesc = { service, notes, status: 'SCH' };
-        if (groupId) assignDesc.group_id = groupId;
-        if (bpId) assignDesc.bpartner_id = parseInt(bpId);
-        const data = {
-          AD_Org_ID: api.getOrgId(),
-          S_Resource_ID: rid,
-          Name: name + (service ? ' - ' + service : ''),
-          Description: JSON.stringify(assignDesc),
-          AssignDateFrom: startISO,
-          AssignDateTo: endISO,
-          Qty: 1,
-        };
-        await api.createAssignment(data);
-      }
+      await api.bookAppointment({
+        name, date, startTime, endTime, service, notes,
+        resourceIds: checkedResources,
+        orgId: api.getOrgId(),
+        bpartnerId: bpId ? parseInt(bpId) : 0,
+      });
       toast('預約已建立');
     } catch (e) {
       toast('建立失敗：' + (e.message || e), 'error');

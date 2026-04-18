@@ -77,7 +77,19 @@ async function getEvents(rangeStart, rangeEnd) {
   return data.events || [];
 }
 
-// ── Write operations (still use REST API for now) ──
+// ── Write operations ──
+
+/** Book appointment(s) atomically via custom API */
+async function bookAppointment(data) {
+  const res = await fetch(`${APPT_BASE}/book`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || res.statusText);
+  return json;
+}
 
 function createAssignment(data) { return post('models/S_ResourceAssignment', data); }
 function updateAssignment(id, data) { return put(`models/S_ResourceAssignment/${id}`, data); }
@@ -108,6 +120,7 @@ function completeOrder(orderId) {
 export default {
   init, getOrgId, getClientId,
   getInit, getEvents,
+  bookAppointment,
   createAssignment, updateAssignment, deleteAssignment,
   searchAssignments, searchBPartners, getBPartner,
   createOrder, createOrderLine, completeOrder,

@@ -36,4 +36,13 @@
         <servlet-name>EventsServlet</servlet-name>
         <url-pattern>/events</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BookServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.BookServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookServlet</servlet-name>
+        <url-pattern>/book</url-pattern>
+    </servlet-mapping>
 </web-app>
