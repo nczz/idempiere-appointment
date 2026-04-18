@@ -66,6 +66,24 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>ResourceMgmtTypes</servlet-name>
+        <servlet-class>com.mxp.appointments.ResourceManagementServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResourceMgmtTypes</servlet-name>
+        <url-pattern>/resource-types</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ResourceMgmt</servlet-name>
+        <servlet-class>com.mxp.appointments.ResourceManagementServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResourceMgmt</servlet-name>
+        <url-pattern>/resources</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>UpdateServlet</servlet-name>
         <servlet-class>com.mxp.appointments.UpdateServlet</servlet-class>
     </servlet>

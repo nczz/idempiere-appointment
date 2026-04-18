@@ -12,12 +12,13 @@ interface Props {
   onSetShowCancelled: (v: boolean) => void;
   onJumpToDate: (date: string) => void;
   onManageServices: () => void;
+  onManageResources: () => void;
 }
 
 export default function Sidebar({
   resources, resourceTypes, statusList,
   selectedResources, showCancelled,
-  onToggleResource, onSetShowCancelled, onJumpToDate, onManageServices,
+  onToggleResource, onSetShowCancelled, onJumpToDate, onManageServices, onManageResources,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Assignment[]>([]);
@@ -107,6 +108,9 @@ export default function Sidebar({
 
       {/* Settings */}
       <div className="sidebar-section">
+        <button onClick={onManageResources} style={{ width: '100%', padding: '6px', fontSize: 13, cursor: 'pointer', marginBottom: 4 }}>
+          👥 管理資源
+        </button>
         <button onClick={onManageServices} style={{ width: '100%', padding: '6px', fontSize: 13, cursor: 'pointer' }}>
           ⚙️ 管理服務項目
         </button>
