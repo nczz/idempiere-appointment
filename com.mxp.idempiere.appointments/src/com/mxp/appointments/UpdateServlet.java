@@ -73,9 +73,18 @@ public class UpdateServlet extends HttpServlet {
 			ra.setDescription(desc);
 
 			// Update AD columns if available
+			String oldStatus = null;
+			try { oldStatus = (String) ra.get_Value("X_AppointmentStatus"); } catch (Exception e) {}
 			try { if (status != null) ra.set_ValueOfColumn("X_AppointmentStatus", status); } catch (Exception e) {}
+			try { if (notes != null) ra.set_ValueOfColumn("X_Notes", notes); } catch (Exception e) {}
+			try { if (service != null) ra.set_ValueOfColumn("X_AppointmentService", service); } catch (Exception e) {}
 
 			ra.saveEx(trxName);
+
+			// Write status log if status changed
+			if (status != null && !status.equals(oldStatus)) {
+				writeStatusLog(ra.get_ID(), oldStatus, status, ra.getAD_Client_ID(), ra.getAD_Org_ID(), trxName);
+			}
 
 			// Sync grouped assignments (same time/status)
 			String groupId = extractJsonField(desc, "group_id");
@@ -98,6 +107,11 @@ public class UpdateServlet extends HttpServlet {
 							ga.setDescription(gaDesc);
 							try { if (status != null) ga.set_ValueOfColumn("X_AppointmentStatus", status); } catch (Exception e) {}
 							ga.saveEx(trxName);
+							if (status != null) {
+								String gaOld = null;
+								try { gaOld = extractJsonField(ga.getDescription(), "status"); } catch (Exception e) {}
+								writeStatusLog(ga.get_ID(), gaOld, status, ga.getAD_Client_ID(), ga.getAD_Org_ID(), trxName);
+							}
 						}
 					}
 				}
@@ -154,5 +168,12 @@ public class UpdateServlet extends HttpServlet {
 	private int parseInt(String s) {
 		if (s == null) return -1;
 		try { return Integer.parseInt(s.trim()); } catch (Exception e) { return -1; }
+	}
+
+	private void writeStatusLog(int assignmentId, String oldStatus, String newStatus, int clientId, int orgId, String trxName) {
+		DB.executeUpdateEx(
+			"INSERT INTO X_AppointmentStatusLog (S_ResourceAssignment_ID, OldStatus, NewStatus, AD_Client_ID, AD_Org_ID, CreatedBy) "
+			+ "VALUES (?, ?, ?, ?, ?, 100)",
+			new Object[]{assignmentId, oldStatus, newStatus, clientId, orgId}, trxName);
 	}
 }

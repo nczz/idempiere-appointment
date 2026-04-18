@@ -71,6 +71,7 @@ public class GroupAddServlet extends HttpServlet {
 				groupId = UUID.randomUUID().toString();
 				desc = setJsonField(desc, "group_id", groupId);
 				source.setDescription(desc);
+				try { source.set_ValueOfColumn("X_GroupID", groupId); } catch (Exception e) {}
 				source.saveEx(trxName);
 			}
 
@@ -93,6 +94,8 @@ public class GroupAddServlet extends HttpServlet {
 			ra.setDescription(newDesc);
 
 			try { ra.set_ValueOfColumn("X_AppointmentStatus", status != null ? status : "SCH"); } catch (Exception e) {}
+			try { ra.set_ValueOfColumn("X_GroupID", groupId); } catch (Exception e) {}
+			if (service != null) { try { ra.set_ValueOfColumn("X_AppointmentService", service); } catch (Exception e) {} }
 			ra.saveEx(trxName);
 
 			trx.commit(true);

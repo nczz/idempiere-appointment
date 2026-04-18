@@ -123,6 +123,9 @@ public class BookServlet extends HttpServlet {
 				// Set custom columns if they exist
 				try { ra.set_ValueOfColumn("X_AppointmentStatus", "SCH"); } catch (Exception e) {}
 				try { if (bpartnerId > 0) ra.set_ValueOfColumn("C_BPartner_ID", bpartnerId); } catch (Exception e) {}
+				try { if (service != null && !service.isEmpty()) ra.set_ValueOfColumn("X_AppointmentService", service); } catch (Exception e) {}
+				try { if (groupId != null) ra.set_ValueOfColumn("X_GroupID", groupId); } catch (Exception e) {}
+				try { if (notes != null && !notes.isEmpty()) ra.set_ValueOfColumn("X_Notes", notes); } catch (Exception e) {}
 
 				ra.saveEx(trxName);
 				createdIds.add(ra.getS_ResourceAssignment_ID());

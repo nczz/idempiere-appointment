@@ -39,7 +39,7 @@ public class EventsServlet extends HttpServlet {
 			StringBuilder json = new StringBuilder("{\"events\":[");
 			String sql = "SELECT S_ResourceAssignment_ID, S_Resource_ID, Name, Description, "
 					+ "AssignDateFrom, AssignDateTo, IsConfirmed, Qty, IsActive, "
-					+ "X_AppointmentStatus, C_BPartner_ID "
+					+ "X_AppointmentStatus, C_BPartner_ID, X_AppointmentService, X_GroupID, X_Notes "
 					+ "FROM S_ResourceAssignment "
 					+ "WHERE AssignDateFrom >= ?::date AND AssignDateFrom < ?::date "
 					+ "AND IsActive='Y' AND AD_Client_ID = ? "
@@ -64,6 +64,12 @@ public class EventsServlet extends HttpServlet {
 						json.append(",\"X_AppointmentStatus\":\"").append(nvl(rs.getString(10))).append("\"");
 						int bpId = rs.getInt(11);
 						if (!rs.wasNull()) json.append(",\"C_BPartner_ID\":").append(bpId);
+						String svc = rs.getString(12);
+						if (svc != null && !svc.isEmpty()) json.append(",\"X_AppointmentService\":\"").append(esc(svc)).append("\"");
+						String gid = rs.getString(13);
+						if (gid != null && !gid.isEmpty()) json.append(",\"X_GroupID\":\"").append(esc(gid)).append("\"");
+						String notes = rs.getString(14);
+						if (notes != null && !notes.isEmpty()) json.append(",\"X_Notes\":\"").append(esc(notes)).append("\"");
 						json.append("}");
 						first = false;
 					}
