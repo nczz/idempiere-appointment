@@ -11,12 +11,13 @@ interface Props {
   onToggleResource: (id: number) => void;
   onSetShowCancelled: (v: boolean) => void;
   onJumpToDate: (date: string) => void;
+  onManageServices: () => void;
 }
 
 export default function Sidebar({
   resources, resourceTypes, statusList,
   selectedResources, showCancelled,
-  onToggleResource, onSetShowCancelled, onJumpToDate,
+  onToggleResource, onSetShowCancelled, onJumpToDate, onManageServices,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Assignment[]>([]);
@@ -102,6 +103,13 @@ export default function Sidebar({
           <input type="checkbox" checked={showCancelled} onChange={e => onSetShowCancelled(e.target.checked)} />
           顯示已取消
         </label>
+      </div>
+
+      {/* Settings */}
+      <div className="sidebar-section">
+        <button onClick={onManageServices} style={{ width: '100%', padding: '6px', fontSize: 13, cursor: 'pointer' }}>
+          ⚙️ 管理服務項目
+        </button>
       </div>
     </aside>
   );

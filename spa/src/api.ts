@@ -125,6 +125,35 @@ export async function groupRemove(assignmentId: number): Promise<void> {
 
 // ── REST API (for operations not yet migrated to custom API) ──────
 
+// ── Service management ────────────────────────────────────────────
+
+export async function getServices(): Promise<ServicePreset[]> {
+  const data = await apptFetch<{ services: ServicePreset[] }>('services');
+  return data.services || [];
+}
+
+export async function createService(name: string, minutes: number): Promise<void> {
+  await apptFetch('services', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, minutes: String(minutes) }),
+  });
+}
+
+export async function updateService(id: number, name: string, minutes: number): Promise<void> {
+  await apptFetch('services', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: String(id), name, minutes: String(minutes) }),
+  });
+}
+
+export async function deleteService(id: number): Promise<void> {
+  await apptFetch(`services?id=${id}`, { method: 'DELETE' });
+}
+
+// ── Search (REST API) ─────────────────────────────────────────────
+
 export async function searchAssignments(keyword: string): Promise<Assignment[]> {
   const data = await restFetch<{ records: Assignment[] }>(
     `models/S_ResourceAssignment?$filter=contains(Name,'${keyword}')&$orderby=AssignDateFrom desc&$top=20`

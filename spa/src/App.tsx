@@ -1,14 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppState } from './hooks/useAppState';
 import Calendar from './components/Calendar';
 import Sidebar from './components/Sidebar';
 import AppointmentDialog from './components/AppointmentDialog';
+import ServiceManager from './components/ServiceManager';
 import type { Appointment } from './types';
 import './style.css';
 
 export default function App() {
   const state = useAppState();
-  const calendarRef = useRef<{ gotoDate: (d: string) => void }>(null);
+  const [showServiceMgr, setShowServiceMgr] = useState(false);
 
   // Load initial data on mount
   useEffect(() => { state.loadInit(); }, []);
@@ -50,6 +51,7 @@ export default function App() {
         onToggleResource={state.toggleResource}
         onSetShowCancelled={state.setShowCancelled}
         onJumpToDate={handleJumpToDate}
+        onManageServices={() => setShowServiceMgr(true)}
       />
 
       <main className="calendar-container">
@@ -76,6 +78,13 @@ export default function App() {
           onGroupAdd={state.addResource}
           onGroupRemove={state.removeResource}
           toast={state.toast}
+        />
+      )}
+
+      {showServiceMgr && (
+        <ServiceManager
+          onClose={() => setShowServiceMgr(false)}
+          onUpdated={() => state.loadInit()}
         />
       )}
 

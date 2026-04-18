@@ -57,6 +57,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>ServiceServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.ServiceServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServiceServlet</servlet-name>
+        <url-pattern>/services</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>UpdateServlet</servlet-name>
         <servlet-class>com.mxp.appointments.UpdateServlet</servlet-class>
     </servlet>
