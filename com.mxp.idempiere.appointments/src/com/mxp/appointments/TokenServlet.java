@@ -36,7 +36,6 @@ public class TokenServlet extends HttpServlet {
 		req.getReader().lines().forEach(body::append);
 		String jsonBody = body.toString();
 		int sessionId = parseIntField(jsonBody, "sessionId");
-		int requestedOrgId = parseIntField(jsonBody, "orgId");
 		if (sessionId <= 0) {
 			resp.setStatus(400);
 			out.print("{\"error\":\"Missing sessionId\"}");
@@ -64,7 +63,7 @@ public class TokenServlet extends HttpServlet {
 				int clientId = rs.getInt("AD_Client_ID");
 				int userId = rs.getInt("CreatedBy");
 				int roleId = rs.getInt("AD_Role_ID");
-				int orgId = requestedOrgId > 0 ? requestedOrgId : rs.getInt("AD_Org_ID");
+				int orgId = rs.getInt("AD_Org_ID");
 				int warehouseId = rs.getInt("M_Warehouse_ID");
 
 				String token = createJwt(userName, clientId, userId, roleId, orgId, warehouseId, sessionId);
