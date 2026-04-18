@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as api from '../api';
+import { RESOURCE_COLORS } from '../types';
 
 interface ResType { id: number; Name: string; IsActive: boolean; }
 interface Res { id: number; Name: string; S_ResourceType_ID: number; IsActive: boolean; _color?: string; }
@@ -26,7 +27,9 @@ export default function ResourceManager({ onClose, onUpdated }: Props) {
       api.apptFetch<{ resources: Res[] }>('resources'),
     ]);
     setTypes(t.types || []);
-    setResources(r.resources || []);
+    const resList = (r.resources || []) as Res[];
+    resList.forEach((res, i) => { if (!res._color) res._color = RESOURCE_COLORS[i % RESOURCE_COLORS.length]; });
+    setResources(resList);
   }
 
   useEffect(() => { load(); }, []);
