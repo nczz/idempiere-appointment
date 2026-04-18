@@ -284,14 +284,17 @@ function renderDlgResources(assignment) {
         try {
           await api.groupRemoveResource(raId);
           toast('資源已移除');
-          // Ensure all remaining group resources are selected
-          const gid = desc.group_id;
-          const remainingRids = gid
-            ? assignments.filter(a => parseDesc(a).group_id === gid && a.id !== raId).map(a => getResourceId(a))
-            : [];
+          // Re-read group_id from current data (may have been added after dialog opened)
+          const currentAssignment = assignments.find(a => a.id === assignment.id) || assignment;
+          const currentDesc = parseDesc(currentAssignment);
+          const currentGid = currentDesc.group_id;
+          // Collect remaining resource IDs before reload
+          const remainingRids = currentGid
+            ? assignments.filter(a => parseDesc(a).group_id === currentGid && a.id !== raId).map(a => getResourceId(a))
+            : [getResourceId(assignment)];
           await refreshAfterAction(remainingRids);
-          const remaining = gid
-            ? assignments.find(a => { const d = parseDesc(a); return d.group_id === gid; })
+          const remaining = currentGid
+            ? assignments.find(a => { const d = parseDesc(a); return d.group_id === currentGid; })
             : assignments.find(a => a.id === assignment.id);
           if (remaining) {
             editingAssignment = remaining;
