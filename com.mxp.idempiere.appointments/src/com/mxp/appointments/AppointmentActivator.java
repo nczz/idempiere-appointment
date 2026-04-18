@@ -72,14 +72,12 @@ public class AppointmentActivator extends Incremental2PackActivator {
 					String sql = stmt.toString().trim();
 					sql = sql.substring(0, sql.length() - 1);
 					try {
-						// Use raw JDBC — DB.executeUpdateEx doesn't handle DDL (ALTER TABLE)
 						try (var conn = DB.getConnectionRW()) {
-							conn.setAutoCommit(false);
 							try (var ps = conn.createStatement()) {
 								ps.execute("SET search_path TO adempiere, public");
 								ps.execute(sql);
 							}
-							conn.commit();
+							if (!conn.getAutoCommit()) conn.commit();
 						}
 						executed++;
 					} catch (Exception e) {
