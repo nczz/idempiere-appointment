@@ -4,7 +4,6 @@ import type {
 } from './types';
 
 const APPT_BASE = `${window.location.origin}/appointment`;
-const REST_BASE = `${window.location.origin}/api/v1`;
 
 let token: string | null = null;
 
@@ -52,28 +51,7 @@ async function apptFetch<T>(path: string, opts?: RequestInit): Promise<T> {
   return json as T;
 }
 
-// ── REST API (needs JWT token) ────────────────────────────────────
-
-async function restFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${REST_BASE}/${path}`, {
-    ...opts,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...opts.headers,
-    },
-  });
-  if (res.status === 401) {
-    window.parent.postMessage({ type: 'refresh-token' }, '*');
-    throw new Error('Token expired');
-  }
-  if (res.status === 204) return null as T;
-  const json = await res.json();
-  if (!res.ok) throw new Error((json as { detail?: string; title?: string }).detail || (json as { title?: string }).title || res.statusText);
-  return json as T;
-}
-
-// ── Read endpoints (custom API) ───────────────────────────────────
+// ── Read endpoints ────────────────────────────────────────────────
 
 interface InitResponse {
   resourceTypes: ResourceType[];
@@ -130,8 +108,6 @@ export async function groupRemove(assignmentId: number): Promise<void> {
   await apptFetch<{ ok: boolean }>(`group-remove?id=${assignmentId}`, { method: 'DELETE' });
 }
 
-// ── REST API (for operations not yet migrated to custom API) ──────
-
 // ── Service management ────────────────────────────────────────────
 
 export async function getServices(): Promise<ServicePreset[]> {
@@ -159,11 +135,11 @@ export async function deleteService(id: number): Promise<void> {
   await apptFetch(`services?id=${id}`, { method: 'DELETE' });
 }
 
-// ── Search (REST API) ─────────────────────────────────────────────
+// ── Search ─────────────────────────────────────────────────────────
 
 export async function searchAssignments(keyword: string): Promise<Assignment[]> {
-  const data = await restFetch<{ records: Assignment[] }>(
-    `models/S_ResourceAssignment?$filter=contains(Name,'${keyword}')&$orderby=AssignDateFrom desc&$top=20`
+  const data = await apptFetch<{ records: Assignment[] }>(
+    `search?q=${encodeURIComponent(keyword)}`
   );
   return data?.records || [];
 }
