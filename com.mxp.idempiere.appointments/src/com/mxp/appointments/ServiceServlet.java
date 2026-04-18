@@ -72,7 +72,8 @@ public class ServiceServlet extends HttpServlet {
 		int refId = getRefId();
 		if (refId <= 0) { error(resp, out, 500, "Reference not found"); return; }
 
-		String value = name.toUpperCase().replaceAll("[^A-Z0-9]", "").substring(0, Math.min(10, name.length()));
+		String stripped = name.toUpperCase().replaceAll("[^A-Z0-9]", "");
+		String value = stripped.isEmpty() ? "SVC" + System.currentTimeMillis() % 100000 : stripped.substring(0, Math.min(10, stripped.length()));
 		String uuid = "mxp-appt-svc-" + System.currentTimeMillis();
 
 		String sql = "INSERT INTO AD_Ref_List (AD_Ref_List_ID, AD_Client_ID, AD_Org_ID, IsActive, "
