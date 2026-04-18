@@ -87,7 +87,7 @@ public class AppointmentFormController implements IFormController {
 			"if(e.data.type==='refresh-token'){" +
 			"zAu.send(new zk.Event(w,'onTokenRefresh',null));" +
 			"}else if(e.data.type==='zoom'){" +
-			"zAu.send(new zk.Event(w,'onZoom',JSON.stringify(e.data)));" +
+			"zAu.send(new zk.Event(w,'onAppointmentZoom',JSON.stringify(e.data)));" +
 			"}});})();";
 		Clients.evalJavaScript(script);
 
@@ -104,7 +104,7 @@ public class AppointmentFormController implements IFormController {
 			}
 		});
 
-		form.getIframe().addEventListener("onZoom", new EventListener<Event>() {
+		form.getIframe().addEventListener("onAppointmentZoom", new EventListener<Event>() {
 			@Override
 			public void onEvent(Event event) {
 				try {
