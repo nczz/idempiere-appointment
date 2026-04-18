@@ -48,10 +48,20 @@
 
     <servlet>
         <servlet-name>BPartnerSearchServlet</servlet-name>
+
         <servlet-class>com.mxp.appointments.BPartnerSearchServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>BPartnerSearchServlet</servlet-name>
         <url-pattern>/bpartners</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UpdateServlet</servlet-name>
+        <servlet-class>com.mxp.appointments.UpdateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateServlet</servlet-name>
+        <url-pattern>/update</url-pattern>
     </servlet-mapping>
 </web-app>

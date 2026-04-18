@@ -92,7 +92,13 @@ async function bookAppointment(data) {
 }
 
 function createAssignment(data) { return post('models/S_ResourceAssignment', data); }
-function updateAssignment(id, data) { return put(`models/S_ResourceAssignment/${id}`, data); }
+function updateAssignment(id, data) {
+  return fetch(`${APPT_BASE}/update?id=${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }).then(async r => { const j = await r.json(); if (!r.ok) throw new Error(j.error); return j; });
+}
 function deleteAssignment(id) { return del(`models/S_ResourceAssignment/${id}`); }
 
 // ── Search (still use REST API) ──

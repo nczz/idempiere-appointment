@@ -273,35 +273,11 @@ async function saveDialog() {
   const endISO = `${date}T${endTime}:00Z`;
 
   if (editingAssignment) {
-    // Update existing
+    // Update existing — server handles group sync
     try {
-      const desc = parseDesc(editingAssignment);
-      desc.notes = notes;
-      desc.service = service;
-      desc.status = status;
-      if (bpId) desc.bpartner_id = parseInt(bpId);
-      const updateData = {
-        Name: name,
-        AssignDateFrom: startISO,
-        AssignDateTo: endISO,
-        Description: JSON.stringify(desc),
-      };
-      // Write to AD columns if available (graceful — server ignores unknown columns)
-      try { updateData.X_AppointmentStatus = status; } catch(_) {}
-      try { if (bpId) updateData.C_BPartner_ID = parseInt(bpId); } catch(_) {}
-      await api.updateAssignment(editingAssignment.id, updateData);
-      // Sync group status
-      if (desc.group_id) {
-        const grouped = assignments.filter(a => parseDesc(a).group_id === desc.group_id && a.id !== editingAssignment.id);
-        for (const ga of grouped) {
-          const gaDesc = { ...parseDesc(ga), status };
-          await api.updateAssignment(ga.id, {
-            Description: JSON.stringify(gaDesc),
-            AssignDateFrom: startISO,
-            AssignDateTo: endISO,
-          });
-        }
-      }
+      await api.updateAssignment(editingAssignment.id, {
+        name, status, date, startTime, endTime, notes,
+      });
       toast('預約已更新');
     } catch (e) {
       toast('更新失敗：' + (e.message || e), 'error');
