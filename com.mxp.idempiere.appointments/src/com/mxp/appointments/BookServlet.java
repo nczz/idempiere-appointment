@@ -59,6 +59,19 @@ public class BookServlet extends HttpServlet {
 		int tokenClientId = AuthContext.getClientId(req);
 		if (clientId != tokenClientId) { error(resp, out, 403, "Access denied"); return; }
 
+		// Validate all resources are bookable (active, available, time-based type)
+		for (int rid : resourceIds) {
+			String resErr = DB.getSQLValueString(null,
+				"SELECT CASE "
+				+ "WHEN r.IsActive='N' THEN r.Name || ' 已停用' "
+				+ "WHEN r.IsAvailable='N' THEN r.Name || ' 不可預約' "
+				+ "WHEN rt.IsTimeSlot='N' THEN r.Name || ' 的資源類型不支援時段預約' "
+				+ "ELSE NULL END "
+				+ "FROM S_Resource r JOIN S_ResourceType rt ON rt.S_ResourceType_ID = r.S_ResourceType_ID "
+				+ "WHERE r.S_Resource_ID = ?", rid);
+			if (resErr != null) { error(resp, out, 400, resErr); return; }
+		}
+
 		// Org: use resource's org if specific, otherwise use token's org (user's login org)
 		int resOrgId = DB.getSQLValue(null, "SELECT AD_Org_ID FROM S_Resource WHERE S_Resource_ID=?", resourceIds[0]);
 		int orgId = resOrgId > 0 ? resOrgId : AuthContext.getOrgId(req);

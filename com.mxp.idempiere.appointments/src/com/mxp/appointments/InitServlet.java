@@ -29,11 +29,11 @@ public class InitServlet extends HttpServlet {
 		try {
 			StringBuilder json = new StringBuilder("{");
 
-			// 1. Resource Types (client's own + system level)
+			// 1. Resource Types (only time-based types for appointment scheduling)
 			json.append("\"resourceTypes\":[");
 			String sql = "SELECT S_ResourceType_ID, Name, IsTimeSlot, TimeSlotStart, TimeSlotEnd, "
 					+ "IsSingleAssignment, OnMonday, OnTuesday, OnWednesday, OnThursday, OnFriday, OnSaturday, OnSunday "
-					+ "FROM S_ResourceType WHERE IsActive='Y' AND AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
+					+ "FROM S_ResourceType WHERE IsActive='Y' AND IsTimeSlot='Y' AND AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
 			appendRows(json, sql, rs -> {
 				return "{\"id\":" + rs.getInt(1)
 						+ ",\"Name\":\"" + esc(rs.getString(2)) + "\""
@@ -52,10 +52,12 @@ public class InitServlet extends HttpServlet {
 			});
 			json.append("],");
 
-			// 2. Resources (include color from Description)
+			// 2. Resources (only available resources under time-based types)
 			json.append("\"resources\":[");
-			sql = "SELECT S_Resource_ID, Name, S_ResourceType_ID, IsAvailable, X_Color "
-					+ "FROM S_Resource WHERE IsActive='Y' AND AD_Client_ID IN (0, " + clientId + ") ORDER BY Name";
+			sql = "SELECT r.S_Resource_ID, r.Name, r.S_ResourceType_ID, r.IsAvailable, r.X_Color "
+					+ "FROM S_Resource r JOIN S_ResourceType rt ON rt.S_ResourceType_ID = r.S_ResourceType_ID "
+					+ "WHERE r.IsActive='Y' AND r.IsAvailable='Y' AND rt.IsTimeSlot='Y' "
+					+ "AND r.AD_Client_ID IN (0, " + clientId + ") ORDER BY r.Name";
 			appendRows(json, sql, rs -> {
 				String color = rs.getString(5);
 				return "{\"id\":" + rs.getInt(1)

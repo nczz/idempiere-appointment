@@ -53,6 +53,17 @@ public class GroupAddServlet extends HttpServlet {
 			Env.setContext(Env.getCtx(), Env.AD_ORG_ID, source.getAD_Org_ID());
 			Env.setContext(Env.getCtx(), "#AD_User_ID", AuthContext.getUserId(req));
 
+			// Validate resource is bookable
+			String resErr = DB.getSQLValueString(null,
+				"SELECT CASE "
+				+ "WHEN r.IsActive='N' THEN r.Name || ' 已停用' "
+				+ "WHEN r.IsAvailable='N' THEN r.Name || ' 不可預約' "
+				+ "WHEN rt.IsTimeSlot='N' THEN r.Name || ' 的資源類型不支援時段預約' "
+				+ "ELSE NULL END "
+				+ "FROM S_Resource r JOIN S_ResourceType rt ON rt.S_ResourceType_ID = r.S_ResourceType_ID "
+				+ "WHERE r.S_Resource_ID = ?", resourceId);
+			if (resErr != null) { error(resp, out, 400, resErr); trx.close(); return; }
+
 			// Conflict check
 			String startStr = source.getAssignDateFrom().toString();
 			String endStr = source.getAssignDateTo().toString();
