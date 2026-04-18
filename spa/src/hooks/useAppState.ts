@@ -22,7 +22,7 @@ function groupAssignments(assignments: Assignment[]): Appointment[] {
   for (const a of assignments) {
     const desc = parseDesc(a.Description);
     const status = a.X_AppointmentStatus || desc.status || '';
-    const key = desc.group_id || `s_${a.id}`;
+    const key = a.X_GroupID || desc.group_id || `s_${a.id}`;
 
     if (!groups[key]) {
       groups[key] = {
@@ -32,8 +32,9 @@ function groupAssignments(assignments: Assignment[]): Appointment[] {
         start: a.AssignDateFrom,
         end: a.AssignDateTo,
         status,
-        service: desc.service || '',
-        notes: desc.notes || '',
+        service: a.X_AppointmentService || desc.service || '',
+        serviceName: a.X_ServiceName || '',
+        notes: a.X_Notes || desc.notes || '',
         bpartnerId: a.C_BPartner_ID ?? desc.bpartner_id ?? null,
         orderId: desc.order_id ?? null,
         resources: [],
@@ -103,7 +104,7 @@ export function useAppState() {
       setServiceList(data.serviceList || []);
       // Default: all resources selected
       setSelectedResources(new Set(res.map(r => r.id)));
-      setSelectedServices(new Set((data.serviceList || []).map((s: ServicePreset) => s.Name)));
+      setSelectedServices(new Set((data.serviceList || []).map((s: ServicePreset) => s.Value)));
       // Load events for current date range (token is now ready)
       const { start, end } = dateRangeRef.current;
       if (start && end) {
@@ -220,7 +221,7 @@ export function useAppState() {
   }, []);
 
   const toggleAllServices = useCallback(() => {
-    setSelectedServices(prev => prev.size === serviceList.length ? new Set() : new Set(serviceList.map(s => s.Name)));
+    setSelectedServices(prev => prev.size === serviceList.length ? new Set() : new Set(serviceList.map(s => s.Value)));
   }, [serviceList]);
 
   // ── Toast messages ──────────────────────────────────────────────

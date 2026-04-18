@@ -234,7 +234,7 @@ export default function AppointmentDialog({
           <label>服務項目</label>
           <select value={service} onChange={e => handleServiceChange(e.target.value)}>
             <option value="">-- 選擇 --</option>
-            {serviceList.map(s => <option key={s.Value} value={s.Name}>{s.Name} ({s.minutes}分)</option>)}
+            {serviceList.map(s => <option key={s.Value} value={s.Value}>{s.Name} ({s.minutes}分)</option>)}
           </select>
         </div>
 

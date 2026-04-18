@@ -106,7 +106,16 @@ public class BookServlet extends HttpServlet {
 			}
 		}
 
-		String displayName = name + (service != null && !service.isEmpty() ? " - " + service : "");
+		// Resolve service: frontend sends Value code, look up display Name
+		String serviceName = service;
+		if (service != null && !service.isEmpty()) {
+			String sn = DB.getSQLValueString(null,
+				"SELECT rl.Name FROM AD_Ref_List rl JOIN AD_Reference r ON r.AD_Reference_ID=rl.AD_Reference_ID "
+				+ "WHERE r.Name='X_AppointmentService' AND rl.Value=? AND rl.IsActive='Y'", service);
+			if (sn != null) serviceName = sn;
+		}
+
+		String displayName = name + (serviceName != null && !serviceName.isEmpty() ? " - " + serviceName : "");
 		String groupId = resourceIds.length > 1 ? UUID.randomUUID().toString() : null;
 
 		String trxName = Trx.createTrxName("book");

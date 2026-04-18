@@ -6,7 +6,7 @@ interface Props {
   resources: Resource[];
   resourceTypes: ResourceType[];
   statusList: Status[];
-  serviceList: { Name: string }[];
+  serviceList: { Value: string; Name: string }[];
   selectedResources: Set<number>;
   selectedServices: Set<string>;
   showCancelled: boolean;
@@ -113,9 +113,9 @@ export default function Sidebar({
             服務篩選
           </label>
           {serviceList.map(s => (
-            <label key={s.Name} className="resource-item">
-              <input type="checkbox" checked={selectedServices.has(s.Name)}
-                onChange={() => onToggleService(s.Name)} />
+            <label key={s.Value} className="resource-item">
+              <input type="checkbox" checked={selectedServices.has(s.Value)}
+                onChange={() => onToggleService(s.Value)} />
               {s.Name}
             </label>
           ))}

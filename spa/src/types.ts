@@ -40,6 +40,10 @@ export interface Assignment {
   AssignDateTo: string;
   X_AppointmentStatus: string;
   C_BPartner_ID?: number;
+  X_AppointmentService?: string;
+  X_ServiceName?: string;
+  X_GroupID?: string;
+  X_Notes?: string;
   IsConfirmed: boolean;
   Qty: number;
 }
@@ -69,7 +73,8 @@ export interface Appointment {
   start: string;
   end: string;
   status: string;
-  service: string;
+  service: string;                // Value code
+  serviceName: string;            // Display name
   notes: string;
   bpartnerId: number | null;
   orderId: number | null;

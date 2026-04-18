@@ -37,13 +37,17 @@ public class EventsServlet extends HttpServlet {
 
 		try {
 			StringBuilder json = new StringBuilder("{\"events\":[");
-			String sql = "SELECT S_ResourceAssignment_ID, S_Resource_ID, Name, Description, "
-					+ "AssignDateFrom, AssignDateTo, IsConfirmed, Qty, IsActive, "
-					+ "X_AppointmentStatus, C_BPartner_ID, X_AppointmentService, X_GroupID, X_Notes "
-					+ "FROM S_ResourceAssignment "
-					+ "WHERE AssignDateFrom >= ?::date AND AssignDateFrom < ?::date "
-					+ "AND IsActive='Y' AND AD_Client_ID = ? "
-					+ "ORDER BY AssignDateFrom";
+			String sql = "SELECT ra.S_ResourceAssignment_ID, ra.S_Resource_ID, ra.Name, ra.Description, "
+					+ "ra.AssignDateFrom, ra.AssignDateTo, ra.IsConfirmed, ra.Qty, ra.IsActive, "
+					+ "ra.X_AppointmentStatus, ra.C_BPartner_ID, ra.X_AppointmentService, ra.X_GroupID, ra.X_Notes, "
+					+ "svc.Name AS ServiceName "
+					+ "FROM S_ResourceAssignment ra "
+					+ "LEFT JOIN AD_Ref_List svc ON svc.Value = ra.X_AppointmentService "
+					+ "AND svc.AD_Reference_ID = (SELECT AD_Reference_ID FROM AD_Reference WHERE Name='X_AppointmentService') "
+					+ "AND svc.IsActive='Y' "
+					+ "WHERE ra.AssignDateFrom >= ?::date AND ra.AssignDateFrom < ?::date "
+					+ "AND ra.IsActive='Y' AND ra.AD_Client_ID = ? "
+					+ "ORDER BY ra.AssignDateFrom";
 
 			boolean first = true;
 			try (PreparedStatement ps = DB.prepareStatement(sql, null)) {
@@ -66,6 +70,8 @@ public class EventsServlet extends HttpServlet {
 						if (!rs.wasNull()) json.append(",\"C_BPartner_ID\":").append(bpId);
 						String svc = rs.getString(12);
 						if (svc != null && !svc.isEmpty()) json.append(",\"X_AppointmentService\":\"").append(esc(svc)).append("\"");
+						String svcName = rs.getString(15);
+						if (svcName != null) json.append(",\"X_ServiceName\":\"").append(esc(svcName)).append("\"");
 						String gid = rs.getString(13);
 						if (gid != null && !gid.isEmpty()) json.append(",\"X_GroupID\":\"").append(esc(gid)).append("\"");
 						String notes = rs.getString(14);
