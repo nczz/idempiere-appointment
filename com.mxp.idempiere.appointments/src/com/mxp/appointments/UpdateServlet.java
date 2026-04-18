@@ -39,6 +39,7 @@ public class UpdateServlet extends HttpServlet {
 		String startTime = parseString(json, "startTime");
 		String endTime = parseString(json, "endTime");
 		String notes = parseString(json, "notes");
+		String service = parseString(json, "service");
 
 		String trxName = Trx.createTrxName("upd");
 		Trx trx = Trx.get(trxName, true);
@@ -66,6 +67,7 @@ public class UpdateServlet extends HttpServlet {
 			try {
 				if (status != null) desc = setJsonField(desc, "status", status);
 				if (notes != null) desc = setJsonField(desc, "notes", notes);
+				if (service != null) desc = setJsonField(desc, "service", service);
 			} catch (Exception e) { /* keep original */ }
 			ra.setDescription(desc);
 

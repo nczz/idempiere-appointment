@@ -167,6 +167,7 @@ export function useAppState() {
         startTime: appt.start.slice(11, 16),
         endTime: appt.end.slice(11, 16),
         notes: appt.notes,
+        service: appt.service,
       });
     }
     const rids = appt.resources.map(r => r.resourceId);

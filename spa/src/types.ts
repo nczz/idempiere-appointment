@@ -107,6 +107,7 @@ export interface UpdateRequest {
   startTime: string;
   endTime: string;
   notes: string;
+  service: string;
 }
 
 export interface BPartnerResult {

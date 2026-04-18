@@ -9,7 +9,7 @@ interface Props {
   serviceList: ServicePreset[];
   onClose: () => void;
   onBook: (data: { name: string; date: string; startTime: string; endTime: string; service: string; notes: string; resourceIds: number[]; bpartnerId: number }) => Promise<void>;
-  onUpdate: (appt: Appointment, data: { name: string; status: string; date: string; startTime: string; endTime: string; notes: string }) => Promise<void>;
+  onUpdate: (appt: Appointment, data: { name: string; status: string; date: string; startTime: string; endTime: string; notes: string; service: string }) => Promise<void>;
   onCancel: (appt: Appointment) => Promise<void>;
   onGroupAdd: (appt: Appointment, resourceId: number) => Promise<void>;
   onGroupRemove: (assignmentId: number, appt: Appointment) => Promise<void>;
@@ -99,7 +99,7 @@ export default function AppointmentDialog({
     setSaving(true);
     try {
       if (isEdit && appt) {
-        await onUpdate(appt, { name: name.trim(), status, date, startTime, endTime, notes: notes.trim() });
+        await onUpdate(appt, { name: name.trim(), status, date, startTime, endTime, notes: notes.trim(), service });
         toast('預約已更新');
       } else {
         if (selectedRids.length === 0) { toast('請選擇至少一個資源', 'error'); setSaving(false); return; }
