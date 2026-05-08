@@ -252,3 +252,5 @@ export function useAppState() {
     setDialog, toast,
   };
 }
+
+export type AppState = ReturnType<typeof useAppState>;

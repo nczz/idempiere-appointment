@@ -1,121 +1,34 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAppState } from './hooks/useAppState';
-import Calendar from './components/Calendar';
-import Sidebar from './components/Sidebar';
-import AppointmentDialog from './components/AppointmentDialog';
-import ServiceManager from './components/ServiceManager';
-import ResourceManager from './components/ResourceManager';
-import StatusManager from './components/StatusManager';
-import type { Appointment } from './types';
 import './style.css';
+
+const DesktopLayout = lazy(() => import('./layouts/DesktopLayout'));
+const MobileLayout = lazy(() => import('./layouts/MobileLayout'));
 
 export default function App() {
   const state = useAppState();
-  const [showServiceMgr, setShowServiceMgr] = useState(false);
-  const [showResourceMgr, setShowResourceMgr] = useState(false);
-  const [showStatusMgr, setShowStatusMgr] = useState(false);
+  const [mobile, setMobile] = useState(() => window.innerWidth < 1024);
+  const [tablet, setTablet] = useState(() => window.innerWidth >= 768 && window.innerWidth < 1024);
 
-  // Load initial data on mount
   useEffect(() => { state.loadInit(); }, []);
 
-  // Calendar date range change → load events
-  function handleDatesSet(start: string, end: string) {
-    state.loadEvents(start, end);
-  }
-
-  // Click empty slot → open create dialog
-  function handleSelect(start: string, end: string) {
-    state.setDialog({
-      mode: 'create',
-      defaultDate: start.slice(0, 10),
-      defaultStart: start.slice(11, 16),
-      defaultEnd: end.slice(11, 16),
-    });
-  }
-
-  // Click event → open edit dialog
-  function handleEventClick(appt: Appointment) {
-    state.setDialog({ mode: 'edit', appointment: appt });
-  }
-
-  // Search result → jump to date
-  function handleJumpToDate(_date: string) {
-    // FullCalendar gotoDate is handled via the ref if needed
-    // For now, the calendar will show the date when events are loaded
-  }
+  useEffect(() => {
+    const check = () => {
+      const w = window.innerWidth;
+      setMobile(w < 1024);
+      setTablet(w >= 768 && w < 1024);
+    };
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   return (
     <div className="app-container">
-      <Sidebar
-        resources={state.resources}
-        resourceTypes={state.resourceTypes}
-        statusList={state.statusList}
-        serviceList={state.serviceList}
-        selectedResources={state.selectedResources}
-        selectedServices={state.selectedServices}
-        showCancelled={state.showCancelled}
-        onToggleResource={state.toggleResource}
-        onToggleAllResources={state.toggleAllResources}
-        onToggleService={state.toggleService}
-        onToggleAllServices={state.toggleAllServices}
-        onSetShowCancelled={state.setShowCancelled}
-        onJumpToDate={handleJumpToDate}
-        onManageServices={() => setShowServiceMgr(true)}
-        onManageResources={() => setShowResourceMgr(true)}
-        onManageStatuses={() => setShowStatusMgr(true)}
-      />
+      <Suspense fallback={<div style={{ padding: 24 }}>載入中...</div>}>
+        {mobile ? <MobileLayout state={state} tablet={tablet} /> : <DesktopLayout state={state} />}
+      </Suspense>
 
-      <main className="calendar-container">
-        <Calendar
-          appointments={state.appointments}
-          resources={state.resources}
-          statusList={state.statusList}
-          onDatesSet={handleDatesSet}
-          onSelect={handleSelect}
-          onEventClick={handleEventClick}
-        />
-      </main>
-
-      {state.dialog && (
-        <AppointmentDialog
-          dialog={state.dialog}
-          resources={state.resources}
-          statusList={state.statusList}
-          serviceList={state.serviceList}
-          onClose={() => state.setDialog(null)}
-          onBook={state.bookAppointment}
-          onUpdate={state.updateAppointment}
-          onCancel={state.cancelAppointment}
-          onGroupAdd={state.addResource}
-          onGroupRemove={state.removeResource}
-          toast={state.toast}
-        />
-      )}
-
-      {showServiceMgr && (
-        <ServiceManager
-          onClose={() => setShowServiceMgr(false)}
-          onUpdated={() => state.loadInit()}
-        />
-      )}
-
-      {showResourceMgr && (
-        <ResourceManager
-          onClose={() => setShowResourceMgr(false)}
-          onUpdated={() => state.loadInit()}
-        />
-      )}
-
-      {showStatusMgr && (
-        <StatusManager
-          statuses={state.statusList}
-          onClose={() => setShowStatusMgr(false)}
-          onUpdated={() => state.loadInit()}
-        />
-      )}
-
-      {/* Toast container */}
-      <div id="toastContainer" style={{ position: 'fixed', top: 16, right: 16, zIndex: 2000 }}>
+      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 2000 }}>
         {state.toasts.map(t => (
           <div key={t.id} className={`toast toast-${t.type}`}>{t.msg}</div>
         ))}

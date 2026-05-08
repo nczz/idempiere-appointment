@@ -6,6 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import type { DateSelectArg, EventClickArg, EventDropArg, DatesSetArg } from '@fullcalendar/core';
 import type { Appointment, Resource, Status, DialogState } from '../types';
 import { TERMINAL_STATUSES } from '../types';
+import { toDateTimeStr } from '../utils/date';
 
 interface Props {
   appointments: Appointment[];
@@ -44,7 +45,7 @@ export default function Calendar({ appointments, resources, statusList, onDatesS
   }
 
   function handleSelect(info: DateSelectArg) {
-    onSelect(info.startStr, info.endStr);
+    onSelect(toDateTimeStr(info.start), toDateTimeStr(info.end));
   }
 
   function handleEventClick(info: EventClickArg) {

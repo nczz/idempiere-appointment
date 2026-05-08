@@ -15,6 +15,7 @@
 - 🚫 衝突檢測（IsSingleAssignment 資源）
 - 📋 複製到下週（定期回訪）
 - 🔐 Session-based JWT — 誰登入就用誰的權限，不需要 service account
+- 📱 RWD 三段式：桌面（≥1024px）、平板（768~1024px）、手機（<768px）
 
 ## 系統需求
 
