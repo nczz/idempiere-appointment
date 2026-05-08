@@ -95,7 +95,6 @@ spa/src/
 
 - 在 Servlet 裡信任前端傳入的 AD_Client_ID / AD_Org_ID / AD_User_ID
 - 用 `Env.getAD_Org_ID()` 產生 JWT 或做安全決策
-- 用 `update-prd.sh` 部署（會破壞 REST API）
 - 用 `nextval('sequence')` 產生 ID（用 `DB.getNextID()`）
 - 寫死 client ID、port、UOM ID 等環境相關值
 - 更新知識庫內容未經使用者確認
@@ -134,7 +133,6 @@ spa/src/
 
 ## 部署
 
-- 使用手動 exploded bundle + `bundles.info`，不用 `update-prd.sh`（會破壞 REST API）
+- 使用 `update-prd.sh`（社群標準 p2 director 方式）
 - SPA 靜態檔更新不需重啟 iDempiere
 - Java class 更新需要重啟
-- 首次安裝需清 OSGi cache：`rm -rf configuration/org.eclipse.osgi`
