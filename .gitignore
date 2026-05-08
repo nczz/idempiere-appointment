@@ -5,3 +5,4 @@ test-results/
 bin/
 spa/node_modules/
 spa/dist/
+target/

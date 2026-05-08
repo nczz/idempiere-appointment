@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  idempiere:
+    image: idempiereofficial/idempiere:12-release
+    ports:
+      - "9080:8080"
+      - "9443:8443"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: idempiere
+      DB_USER: adempiere
+      DB_PASS: adempiere
+      DB_ADMIN_PASS: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - idempiere_config:/opt/idempiere/configuration
+      - /Users/chun/Projects/idempiere:/mnt/idempiere-src:ro
+      - /Users/chun/Projects/idempiere-appointment:/mnt/plugin-src
+
+volumes:
+  pgdata:
+  idempiere_config:
